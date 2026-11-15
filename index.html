@@ -510,7 +510,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32p
         <option value="deadline">Sort: deadline</option><option value="fit">Sort: fit score</option><option value="name">Sort: name</option><option value="cost">Sort: tuition</option>
       </select>
       <div class="seg" role="group" aria-label="View" id="pView">
-        <button type="button" data-pv="cards">Cards</button><button type="button" data-pv="table">Table</button><button type="button" data-pv="map">Map</button><button type="button" data-pv="timeline">Timeline</button>
+        <button type="button" data-pv="table">Table</button><button type="button" data-pv="cards">Cards</button><button type="button" data-pv="map">Map</button><button type="button" data-pv="timeline">Timeline</button>
       </div>
       <button class="btn" type="button" data-add="programs">+ Add program</button>
     </div>
@@ -793,7 +793,7 @@ const uid = () => Math.random().toString(36).slice(2,9)+Date.now().toString(36).
 let profiles = LS.get("cove.profiles",[]);
 let active = LS.get("cove.active",null);
 let D = null;
-const ui = { view: LS.get("cove.view","home"), cat:"All", prio:"All", tq:"", pq:"", pc:"All", pt:"All", ps:"Active", sort:"deadline", pv: LS.get("cove.pv","cards"), av: LS.get("cove.av","board"), cmp:new Set(), drawer:null };
+const ui = { view: LS.get("cove.view","home"), cat:"All", prio:"All", tq:"", pq:"", pc:"All", pt:"All", ps:"Active", sort:"deadline", pv: LS.get("cove.pv2","table"), av: LS.get("cove.av","board"), cmp:new Set(), drawer:null };
 
 /* ================= templates ================= */
 const defaultDims = () => [
@@ -1238,13 +1238,22 @@ function rPrograms(){
   if(!D.programs.length){ out.innerHTML=`<div class="panel"><p class="empty">No programs yet. Use “Add program” to start your list.</p></div>`; return; }
   if(!l.length){ out.innerHTML=`<div class="panel"><p class="empty">No programs match these filters.</p></div>`; return; }
   if(ui.pv==="table"){
-    out.innerHTML=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th><span class="sr">Compare</span></th><th>Program</th><th>Tier</th><th>Fit</th><th>Deadline</th><th>Tuition / yr</th><th>IELTS</th><th>GRE/GMAT</th><th>Status</th></tr></thead><tbody>${
-      l.map(p=>`<tr data-id="${esc(p.id)}"><td><input type="checkbox" data-act="cmp" aria-label="Compare ${esc(p.name)}" ${ui.cmp.has(p.id)?"checked":""}></td>
-      <td><button class="link" style="text-decoration:none;text-align:left" type="button" data-open="${esc(p.id)}"><span class="name">${esc(p.name)}</span></button><div class="sub">${esc(p.school)} · ${esc(p.city||p.country)}</div></td>
-      <td><span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span></td><td class="num">${fit(p)??"—"}</td>
-      <td class="tnum">${p.deadline?`${esc(fmtY(p.deadline))}<div class="sub">${rel(daysTo(p.deadline))}</div>`:"—"}</td>
-      <td class="num">${money(p.tuition,p.currency)}</td><td>${esc(p.ielts||"—")}</td><td>${esc(p.gre)}</td>
-      <td><select data-act="pstatus" aria-label="Status for ${esc(p.name)}">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`;
+    const stemTxt=p=>p.country!=="USA"?"—":({yes:"Yes",no:"No",unknown:"Check"})[p.stem];
+    out.innerHTML=`<div class="tbl-wrap"><table class="tbl" style="min-width:1500px"><thead><tr><th><span class="sr">Compare</span></th><th>Program</th><th>Country</th><th>Tier</th><th>Fit</th><th>Status</th><th>Intake</th><th>Deadline</th><th>Tuition / yr</th><th>Gap / yr</th><th>App fee</th><th>IELTS</th><th>GRE / GMAT</th><th>STEM</th><th>Admissions contact</th><th>Checklist</th><th>Links</th></tr></thead><tbody>${
+      l.map(p=>{ const hasCost=p.tuition!==""||p.living!==""; const g=Math.max(0,num(p.tuition)+num(p.living)-num(p.expFunding));
+      return `<tr data-id="${esc(p.id)}"><td><input type="checkbox" data-act="cmp" aria-label="Compare ${esc(p.name)}" ${ui.cmp.has(p.id)?"checked":""}></td>
+      <td style="min-width:220px"><button class="link" style="text-decoration:none;text-align:left" type="button" data-open="${esc(p.id)}"><span class="name">${esc(p.name)}</span></button><div class="sub">${esc(p.school)}</div></td>
+      <td><span class="flag">${flag(p.country)}</span><div class="sub">${esc(p.city||p.country)}</div></td>
+      <td><span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span></td><td class="num"><b>${fit(p)??"—"}</b></td>
+      <td><select data-act="pstatus" aria-label="Status for ${esc(p.name)}">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></td>
+      <td style="white-space:nowrap">${esc(p.intake||"—")}</td>
+      <td class="tnum" style="white-space:nowrap;${daysTo(p.deadline)!=null&&daysTo(p.deadline)<=14&&daysTo(p.deadline)>=0?"color:var(--warn);font-weight:700":""}">${p.deadline?`${esc(fmtY(p.deadline))}<div class="sub">${rel(daysTo(p.deadline))}</div>`:"—"}</td>
+      <td class="num">${money(p.tuition,p.currency)}</td><td class="num">${hasCost?`<span class="${g>0?"gap-pos":"gap-zero"}">${money(g,p.currency)}</span>`:"—"}</td><td class="num">${money(p.fee,p.currency)}</td>
+      <td>${esc(p.ielts||"—")}</td><td>${esc(p.gre)}</td><td>${stemTxt(p)}</td>
+      <td style="min-width:170px">${esc(p.cName||"")}${p.cEmail?`<div class="sub">${esc(p.cEmail)} <button class="copy" type="button" data-copy="${esc(p.cEmail)}">Copy</button></div>`:p.cName?"":"—"}</td>
+      <td style="min-width:90px"><div class="meter"><i style="width:${checkPct(p)}%"></i></div><div class="sub">${checkPct(p)}%</div></td>
+      <td style="white-space:nowrap">${safeUrl(p.link)?`<a href="${esc(p.link)}" target="_blank" rel="noopener">Page ↗</a>`:""} ${safeUrl(p.portal)?`<a href="${esc(p.portal)}" target="_blank" rel="noopener">Portal ↗</a>`:""}${!safeUrl(p.link)&&!safeUrl(p.portal)?"—":""}</td></tr>`; }).join("")}</tbody></table></div>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">Scroll sideways for more columns. Click a program name to open its full file.</p>`;
   } else if(ui.pv==="map"){
     const fields=[...new Set(l.map(p=>p.field||"Unsorted"))], cs=[...new Set(l.map(p=>p.country))];
     out.innerHTML=`<div class="tbl-wrap"><table class="tbl cmap"><thead><tr><th>Field</th>${cs.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${
@@ -1493,7 +1502,7 @@ document.addEventListener("click",e=>{
   const ep=t.closest("[data-edit-prog]"); if(ep){ openForm("programs",ep.dataset.editProg); return; }
   const cp=t.closest("[data-copy]"); if(cp){ copy(cp.dataset.copy); return; }
   const ct=t.closest("[data-cat]"); if(ct){ ui.cat=ct.dataset.cat; rPlan(); return; }
-  const pv=t.closest("[data-pv]"); if(pv){ ui.pv=pv.dataset.pv; LS.set("cove.pv",ui.pv); rPrograms(); return; }
+  const pv=t.closest("[data-pv]"); if(pv){ ui.pv=pv.dataset.pv; LS.set("cove.pv2",ui.pv); rPrograms(); return; }
   const av=t.closest("[data-av]"); if(av){ ui.av=av.dataset.av; LS.set("cove.av",ui.av); rApps(); return; }
   const pr=t.closest("[data-preset]"); if(pr){ const w=PRESETS[pr.dataset.preset]; D.dims.forEach(d=>{ if(w[d.id]!=null) d.weight=w[d.id]; }); save(); toast(`${pr.dataset.preset} weights applied`); return; }
   if(t.id==="dimReset"){ D.dims=defaultDims(); save(); toast("Dimensions reset"); return; }
