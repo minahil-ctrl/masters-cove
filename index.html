@@ -4,25 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Masters Cove</title>
-<meta name="description" content="A cozy planner for masters applications: milestones, programs, documents and a daily nudge.">
+<meta name="description" content="A planner for masters applications: deadlines, programs, applications, documents, writing, funding, scoring and goals.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700;9..40,800&family=Caveat:wght@500;600&display=swap">
 <style>
-/* Layout: sticky header with tabs; dashboard = greeting + manila-folder countdown, timeline, two-column grid; stacks on phones.
-   Theme "study desk": paper + manila folders + sticky notes + red marker, editorial serif headlines.
-   Dark = the library at night: dark wood, paper text, highlighter-yellow headlines. */
+/* Theme "study desk": paper, manila folders, sticky notes, red marker, editorial serif.
+   Dark = the library at night. Every colour is a token below. */
 :root{
   --bg:#ece6d8; --surface:#fbf8f0; --surface-2:#f1ead9; --ink:#1d1a16; --muted:#6c6457;
-  --olive:#1d1a16; --olive-ink:#fbf8f0;           /* primary: ink */
-  --olive-soft:#d7eb98;                          /* sticky green */
-  --brass:#cf3a2e; --brass-soft:#fbe98c;         /* red marker, sticky yellow */
+  --olive:#1d1a16; --olive-ink:#fbf8f0; --olive-soft:#d7eb98;
+  --brass:#cf3a2e; --brass-soft:#fbe98c;
   --pink:#f8bccb; --blue:#b3dcec; --folder:#f3e2ab; --folder-ink:#1d1a16; --hl:#f5e45e;
-  --line:#dcd2bf; --warn:#b8352a; --warn-soft:#fbd9d3; --good:#3c7a33;
+  --line:#dcd2bf; --warn:#b8352a; --warn-soft:#fbd9d3; --good:#3c7a33; --good-soft:#dcefcf; --amber:#9a6a00; --amber-soft:#fbefc4;
   --shadow:0 1px 0 rgba(40,30,15,.05),0 10px 22px -14px rgba(40,30,15,.35);
   --f-display:"Instrument Serif","Times New Roman",Georgia,serif;
   --f-body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-quote:"Instrument Serif",Georgia,serif;
   --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
   color-scheme:light;
 }
@@ -31,58 +28,118 @@
   --olive:#e9d75c; --olive-ink:#16120e; --olive-soft:#39431f;
   --brass:#f07063; --brass-soft:#4a4120;
   --pink:#5b3140; --blue:#24434f; --folder:#3a3022; --folder-ink:#f3e7c8; --hl:#5d5220;
-  --line:#3a3027; --warn:#f08a7c; --warn-soft:#45231f; --good:#9bcf7a;
-  --shadow:0 12px 26px -16px rgba(0,0,0,.8);
-  color-scheme:dark}}
+  --line:#3a3027; --warn:#f08a7c; --warn-soft:#45231f; --good:#9bcf7a; --good-soft:#26361d; --amber:#e8c15a; --amber-soft:#3d3218;
+  --shadow:0 12px 26px -16px rgba(0,0,0,.8); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#16120e; --surface:#211b15; --surface-2:#2b231b; --ink:#efe6d2; --muted:#a99d89;
   --olive:#e9d75c; --olive-ink:#16120e; --olive-soft:#39431f;
   --brass:#f07063; --brass-soft:#4a4120;
   --pink:#5b3140; --blue:#24434f; --folder:#3a3022; --folder-ink:#f3e7c8; --hl:#5d5220;
-  --line:#3a3027; --warn:#f08a7c; --warn-soft:#45231f; --good:#9bcf7a;
-  --shadow:0 12px 26px -16px rgba(0,0,0,.8);
-  color-scheme:dark}
+  --line:#3a3027; --warn:#f08a7c; --warn-soft:#45231f; --good:#9bcf7a; --good-soft:#26361d; --amber:#e8c15a; --amber-soft:#3d3218;
+  --shadow:0 12px 26px -16px rgba(0,0,0,.8); color-scheme:dark}
 
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
 [hidden]{display:none!important}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:-.01em;line-height:1.05}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
+a{color:var(--ink);text-decoration-color:var(--brass);text-decoration-thickness:2px;text-underline-offset:3px}
 :focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:6px}
 .tnum{font-variant-numeric:tabular-nums}
 .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.hand{font-family:var(--f-hand);font-size:19px;line-height:1.15}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* header */
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;padding-block:12px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .bar1{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding-block:10px 8px}
 .brand{display:flex;flex-direction:column;line-height:1;margin-right:auto}
 .brand b{font-family:var(--f-display);font-weight:400;font-size:30px;letter-spacing:-.01em}
-.brand span{font-family:var(--f-hand);font-size:19px;color:var(--brass);margin-top:0;transform:rotate(-2deg);transform-origin:left}
-nav.tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);padding:3px;border-radius:10px;overflow-x:auto;max-width:100%}
-nav.tabs button{border:0;background:none;padding:7px 14px;border-radius:7px;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap}
+.brand span{font-family:var(--f-hand);font-size:19px;color:var(--brass);transform:rotate(-2deg);transform-origin:left}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+nav.tabs button{border:0;background:none;padding:7px 12px;border-radius:7px;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap}
+nav.tabs button:hover{color:var(--ink);background:var(--surface-2)}
 nav.tabs button[aria-selected="true"]{background:var(--olive);color:var(--olive-ink)}
 .icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;font-weight:600;font-size:13px;color:var(--ink)}
 .icon-btn:hover{border-color:var(--ink)}
 #quoteBtn{background:var(--brass-soft);border-color:transparent;transform:rotate(-1.5deg);box-shadow:var(--shadow)}
 .menu-wrap{position:relative}
-.menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;min-width:220px;box-shadow:var(--shadow);display:grid;z-index:20}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;min-width:230px;box-shadow:var(--shadow);display:grid;z-index:40}
 .menu button,.menu label{border:0;background:none;text-align:left;padding:9px 12px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer}
 .menu button:hover,.menu label:hover{background:var(--surface-2)}
 .menu hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
 .menu .who{padding:8px 12px 4px}
 
-main{padding-block:28px 64px}
-.view{display:grid;gap:22px}
-.status-note{background:var(--brass-soft);border-radius:4px;padding:10px 14px;font-size:14px;box-shadow:var(--shadow)}
+main{padding-block:26px 64px}
+.view{display:grid;gap:22px;min-width:0}
+.status-note{background:var(--brass-soft);border-radius:4px;padding:10px 14px;font-size:14px;box-shadow:var(--shadow);margin-bottom:18px}
+.page-head{display:flex;align-items:baseline;gap:8px 14px;flex-wrap:wrap}
+.page-head h2{font-size:clamp(32px,4.5vw,44px)}
+.page-head p{margin:0;color:var(--muted);flex-basis:100%;max-width:75ch}
 
-/* hero */
+/* generic surfaces */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;display:grid;gap:12px;align-content:start;min-width:0;box-shadow:var(--shadow)}
+.panel-head{display:flex;align-items:baseline;gap:8px 12px;flex-wrap:wrap}
+.panel-head h2{font-size:30px;background:linear-gradient(transparent 58%,var(--hl) 58%,var(--hl) 92%,transparent 92%);padding:0 4px;margin-left:-4px}
+.panel-head h3{font-size:24px}
+.panel-head .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.link{background:none;border:0;color:var(--ink);font-weight:700;font-size:13.5px;padding:0;text-decoration:underline;text-decoration-color:var(--brass);text-underline-offset:3px;text-decoration-thickness:2px}
+.empty{color:var(--muted);font-size:14px;padding:8px 0;list-style:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.btn{border:0;background:var(--olive);color:var(--olive-ink);font-weight:700;border-radius:8px;padding:9px 16px;font-size:14px;white-space:nowrap}
+.btn.ghost{background:var(--surface);border:1.5px solid var(--ink);color:var(--ink)}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn.danger{background:var(--warn);color:#fff}
+.toolbar{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center}
+.toolbar input[type=search],.toolbar select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-size:14px;min-width:0}
+.toolbar input[type=search]{flex:1 1 220px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 12px;font-weight:600;font-size:13px;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip{font-size:11.5px;font-weight:700;border-radius:3px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap;display:inline-block}
+.chip.cat{background:var(--olive-soft);color:var(--ink)}
+.chip.soon{background:var(--brass-soft);color:var(--ink)}
+.chip.late{background:var(--warn-soft);color:var(--warn)}
+.chip.ok{background:var(--good-soft);color:var(--good)}
+.chip.hi{background:var(--warn-soft);color:var(--warn)}
+.chip.lo{background:var(--surface-2);color:var(--muted)}
+.chip.amb{background:var(--amber-soft);color:var(--amber)}
+.tier{font-size:11.5px;font-weight:800;border-radius:3px;padding:2px 8px;white-space:nowrap}
+.tier-Likely{background:var(--good-soft);color:var(--good)} .tier-Target{background:var(--blue);color:var(--ink)} .tier-Reach{background:var(--amber-soft);color:var(--amber)} .tier-Unrated{background:var(--surface-2);color:var(--muted)}
+.del{border:0;background:none;color:var(--muted);font-size:12.5px;font-weight:700;padding:3px 6px;border-radius:6px;white-space:nowrap}
+.del:hover{color:var(--warn)}
+.del.arm{background:var(--warn-soft);color:var(--warn)}
+.edit{border:0;background:none;color:var(--muted);font-size:12.5px;font-weight:700;padding:3px 6px;border-radius:6px}
+.edit:hover{color:var(--ink);background:var(--surface-2)}
+.flag{font-size:11px;font-weight:800;letter-spacing:.1em;padding:2px 7px;border-radius:3px;background:var(--ink);color:var(--bg)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface);box-shadow:var(--shadow)}
+table.tbl{width:100%;border-collapse:collapse;min-width:760px;font-size:13.5px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px dashed var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl .name{font-weight:700}
+.tbl .sub{font-size:12px;color:var(--muted)}
+.tbl input,.tbl select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 7px;font-size:13px;max-width:100%}
+.tbl input[type=number]{width:110px;text-align:right}
+.tbl tfoot td{font-weight:800;border-top:2px solid var(--ink);border-bottom:0}
+.gap-pos{color:var(--warn);font-weight:800} .gap-zero{color:var(--good);font-weight:800}
+
+/* dashboard */
 .hero{display:grid;grid-template-columns:1.35fr 1fr;gap:22px}
 .greet{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:26px;display:grid;gap:14px;min-width:0;box-shadow:var(--shadow);position:relative}
-.greet h1{font-size:clamp(34px,5.2vw,58px)}
+.greet h1{font-size:clamp(34px,5.2vw,56px)}
 .greet p{margin:0;color:var(--muted);max-width:60ch}
 .greet::after{content:"✶ ✶";position:absolute;right:18px;top:12px;font-size:20px;color:var(--brass);transform:rotate(12deg);letter-spacing:6px}
 .progress{display:flex;align-items:center;gap:14px}
@@ -96,8 +153,26 @@ main{padding-block:28px 64px}
 .count .big small{font-size:24px;margin-left:6px}
 .count .what{font-weight:700;font-size:17px}
 .count .when{font-family:var(--f-hand);font-size:21px;color:var(--brass)}
-
-/* timeline */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:2px;text-align:left;box-shadow:var(--shadow);min-width:0}
+.kpi:hover{border-color:var(--ink)}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.kpi .v{font-family:var(--f-display);font-size:38px;line-height:1.05;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.strip{display:flex;gap:8px;flex-wrap:wrap}
+.gchip{border:1.5px solid var(--line);border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:700;background:var(--surface)}
+.gchip.done{border-color:var(--good);color:var(--good)} .gchip.doing{border-color:var(--amber);color:var(--amber)} .gchip.todo{border-style:dashed;color:var(--muted)}
+.search-wrap{position:relative}
+.search-wrap input{width:100%;border:1.5px solid var(--ink);background:var(--surface);border-radius:10px;padding:12px 14px;font-size:15px}
+.results{display:grid;gap:0;margin-top:8px;max-height:340px;overflow-y:auto}
+.results button{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;text-align:left;border:0;border-top:1px dashed var(--line);background:none;padding:9px 4px}
+.results button:hover{background:var(--surface-2)}
+.radar{list-style:none;margin:0;padding:0;display:grid}
+.radar li{display:grid;grid-template-columns:76px auto 1fr;gap:10px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--line)}
+.radar li:first-child{border-top:0}
+.radar .d{font-family:var(--f-hand);font-size:20px;color:var(--brass);line-height:1}
+.radar .t{min-width:0;overflow-wrap:anywhere;font-weight:600}
+.radar .t small{display:block;font-weight:400;color:var(--muted)}
 .timeline{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;overflow-x:auto;box-shadow:var(--shadow)}
 .tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);min-width:640px;margin-top:16px}
 .tl .m{position:relative;padding-top:26px;padding-right:12px}
@@ -108,157 +183,241 @@ main{padding-block:28px 64px}
 .tl .m.next .dot{border:3px solid var(--brass);background:var(--brass-soft)}
 .tl .m .d{font-family:var(--f-hand);font-size:19px;color:var(--brass);line-height:1.1}
 .tl .m .t{font-weight:600;font-size:14px;line-height:1.3}
-
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;display:grid;gap:12px;align-content:start;min-width:0;box-shadow:var(--shadow)}
-.panel-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.panel-head h2{font-size:30px;background:linear-gradient(transparent 58%,var(--hl) 58%,var(--hl) 92%,transparent 92%);padding:0 4px;margin-left:-4px}
-.panel-head .link{margin-left:auto;background:none;border:0;color:var(--ink);font-weight:700;font-size:13.5px;padding:0;text-decoration:underline;text-decoration-color:var(--brass);text-underline-offset:3px;text-decoration-thickness:2px}
-.empty{color:var(--muted);font-size:14px;padding:10px 0;list-style:none}
+.balance{display:grid;gap:10px}
+.balance .row{display:flex;gap:8px;flex-wrap:wrap}
+.note-warn{margin:0;padding:8px 12px;border-left:3px solid var(--amber);background:var(--amber-soft);font-size:13.5px;border-radius:0 6px 6px 0}
+.note-ok{margin:0;padding:8px 12px;border-left:3px solid var(--good);background:var(--good-soft);font-size:13.5px;border-radius:0 6px 6px 0}
+.docbar{display:flex;gap:4px;height:12px}
+.docbar i{flex:1;border-radius:2px;background:var(--surface-2);border:1px solid var(--line)}
+.docbar i.doing{background:var(--hl);border-color:transparent}
+.docbar i.done{background:var(--ink);border-color:var(--ink)}
+.money{display:grid;gap:6px}
+.money div{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:6px;font-size:14px}
+.money div:first-child{border-top:0;padding-top:0}
+.money b{font-variant-numeric:tabular-nums}
 
 /* tasks */
 .tasks{list-style:none;margin:0;padding:0;display:grid}
 .task{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:11px 0;border-top:1px dashed var(--line)}
 .task:first-child{border-top:0}
-.check{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:4px;border:2px solid var(--ink);background:var(--surface);margin:1px 0 0;cursor:pointer;display:grid;place-items:center}
-.check:checked{background:var(--surface)}
+.check{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:4px;border:2px solid var(--ink);background:var(--surface);margin:1px 0 0;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
 .check:checked::after{content:"";width:7px;height:13px;border:solid var(--brass);border-width:0 3px 3px 0;transform:translateY(-2px) rotate(42deg)}
 .task .tt{font-weight:600;min-width:0;overflow-wrap:anywhere}
 .task.is-done .tt{text-decoration:line-through;text-decoration-color:var(--brass);text-decoration-thickness:2px;color:var(--muted)}
-.task .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.task .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}
 .task .note{font-family:var(--f-hand);font-size:18px;color:var(--muted);margin-top:1px;line-height:1.2}
-.chip{font-size:11.5px;font-weight:700;border-radius:3px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
-.chip.cat{background:var(--olive-soft);color:var(--ink)}
-.chip.soon{background:var(--brass-soft);color:var(--ink)}
-.chip.late{background:var(--warn-soft);color:var(--warn)}
-.chip.ok{background:var(--olive-soft);color:var(--good)}
-.del{border:0;background:none;color:var(--muted);font-size:12.5px;font-weight:700;padding:3px 6px;border-radius:6px;white-space:nowrap}
-.del:hover{color:var(--warn)}
-.del.arm{background:var(--warn-soft);color:var(--warn)}
+.task .acts{display:flex;gap:2px}
 .phase{display:grid;gap:4px}
 .phase h3{font-size:26px;display:flex;gap:10px;align-items:baseline}
 .phase h3 .chip{font-family:var(--f-body);letter-spacing:0}
+.plan{display:grid}
+.plan .row{display:grid;grid-template-columns:150px 1fr auto;gap:16px;padding:14px 0;border-top:1px dashed var(--line)}
+.plan .row:first-child{border-top:0}
+.plan .when{font-family:var(--f-hand);font-size:22px;color:var(--brass);line-height:1.1}
+.plan .h{font-weight:700}
+.plan p{margin:2px 0 0;color:var(--muted)}
 
 /* programs */
-.prog-sum{display:flex;gap:10px;flex-wrap:wrap}
-.pill-stat{border-radius:2px;padding:8px 14px;display:flex;gap:8px;align-items:baseline;box-shadow:var(--shadow)}
-.pill-stat:nth-child(1){background:var(--blue);transform:rotate(-1.5deg)}
-.pill-stat:nth-child(2){background:var(--brass-soft);transform:rotate(1deg)}
-.pill-stat:nth-child(3){background:var(--pink);transform:rotate(-.5deg)}
-.pill-stat b{font-family:var(--f-display);font-size:30px;font-weight:400;line-height:1}
-.pill-stat span{font-size:13px;font-weight:700}
-.programs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.programs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
 .pcard{background:var(--surface);border:1px solid var(--line);border-radius:4px 8px 8px 8px;padding:16px 18px;display:grid;gap:8px;align-content:start;min-width:0;box-shadow:var(--shadow);border-top:6px solid var(--folder)}
-.pcard .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pcard .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .pcard h3{font-size:26px;line-height:1.05}
 .pcard .school{color:var(--muted);font-weight:600}
-.pcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.pcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13.5px}
 .pcard dt{color:var(--muted);font-weight:700}
 .pcard dd{margin:0;min-width:0;overflow-wrap:anywhere}
-.pcard a{color:var(--ink);font-weight:700;text-decoration-color:var(--brass);text-decoration-thickness:2px;text-underline-offset:3px}
 .pcard select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:3px 8px;font-weight:700;font-size:12.5px}
-.flag{font-size:11px;font-weight:800;letter-spacing:.1em;padding:2px 7px;border-radius:3px;background:var(--ink);color:var(--bg)}
-.mini-prog{display:grid}
-.mini-prog .mp{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px dashed var(--line)}
-.mini-prog .mp:first-child{border-top:0}
-.mini-prog .mp .n{font-weight:700;min-width:0;overflow-wrap:anywhere}
-.mini-prog .mp .s{font-size:12.5px;color:var(--muted)}
+.fit{font-family:var(--f-display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.fit small{font-family:var(--f-body);font-size:11px;color:var(--muted);margin-left:3px}
+.cmpbox{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.cmpbox input{width:16px;height:16px;accent-color:var(--brass)}
+.cmpbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:var(--brass-soft);border-radius:4px;box-shadow:var(--shadow);font-weight:600}
+.cmap td{min-width:170px}
+.cmap td.lab{font-weight:800;background:var(--surface-2);white-space:nowrap;min-width:120px}
+.mchip{display:block;width:100%;text-align:left;margin:0 0 6px;padding:6px 8px;border-radius:4px;border:1px solid var(--line);border-left-width:5px;background:var(--surface);font-size:12.5px}
+.mchip small{display:block;color:var(--muted)}
+.mchip.Likely{border-left-color:var(--good)} .mchip.Target{border-left-color:#5aa9c9} .mchip.Reach{border-left-color:var(--amber)} .mchip.Unrated{border-left-color:var(--line)}
+.tlm{display:grid;gap:18px}
+.tlm h3{font-size:24px;margin-bottom:6px}
+.tlm .items{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.tlm .it{display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border:0;border-top:1px dashed var(--line);background:none;width:100%;text-align:left}
+.tlm .it:first-child{border-top:0}
+.tlm .it:hover{background:var(--surface-2)}
 
-/* docs as sticky notes */
-.docs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.docs li:not(.empty){background:var(--brass-soft);border-radius:2px;padding:16px 14px 12px;display:grid;grid-template-columns:1fr auto auto;gap:6px 8px;align-items:center;box-shadow:var(--shadow)}
+/* applications */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.stat{border-radius:2px;padding:12px 16px;box-shadow:var(--shadow)}
+.stat:nth-child(5n+1){background:var(--blue);transform:rotate(-1deg)}
+.stat:nth-child(5n+2){background:var(--brass-soft);transform:rotate(.8deg)}
+.stat:nth-child(5n+3){background:var(--olive-soft);transform:rotate(-.5deg)}
+.stat:nth-child(5n+4){background:var(--pink);transform:rotate(.6deg)}
+.stat:nth-child(5n+5){background:var(--folder);transform:rotate(-.6deg)}
+.stat .v{font-family:var(--f-display);font-size:36px;line-height:1}
+.stat .l{font-size:12.5px;font-weight:700}
+.board{display:grid;grid-template-columns:repeat(7,minmax(190px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.bcol{background:var(--surface-2);border-radius:6px;padding:10px;display:grid;gap:8px;align-content:start;min-width:190px}
+.bcol h4{margin:0;font-size:13px;display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.bcard{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:9px 10px;display:grid;gap:4px;font-size:13px;box-shadow:var(--shadow)}
+.bcard b{overflow-wrap:anywhere}
+.bcard select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:3px 6px;font-size:12px}
+.meter{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--ink)}
+
+/* documents */
+.jump{display:flex;gap:8px;flex-wrap:wrap}
+.jump a{font-weight:700;font-size:13.5px}
+.docs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.docs li:not(.empty){background:var(--brass-soft);border-radius:2px;padding:16px 14px 12px;display:grid;gap:6px;align-content:start;box-shadow:var(--shadow)}
 .docs li:not(.empty):nth-child(4n+2){background:var(--pink);transform:rotate(.8deg)}
 .docs li:not(.empty):nth-child(4n+3){background:var(--olive-soft);transform:rotate(-.7deg)}
 .docs li:not(.empty):nth-child(4n+4){background:var(--blue);transform:rotate(.4deg)}
 .docs li:not(.empty):nth-child(4n+1){transform:rotate(-1deg)}
-.docs .dn{font-weight:700;min-width:0;overflow-wrap:anywhere}
-.docs .dnote{grid-column:1/-1;font-family:var(--f-hand);font-size:18px;line-height:1.15}
-.docs .del{color:var(--ink);opacity:.6}
+.docs .top{display:flex;gap:8px;align-items:center}
+.docs .dn{font-weight:800;min-width:0;overflow-wrap:anywhere;margin-right:auto}
+.docs .dnote{font-family:var(--f-hand);font-size:18px;line-height:1.15}
+.docs .dmeta{display:flex;gap:6px;flex-wrap:wrap;font-size:12px}
+.docs .dmeta span{background:rgba(255,255,255,.45);padding:1px 7px;border-radius:3px;font-weight:700}
+.docs .dlinks{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;font-weight:700}
+.docs .edit,.docs .del{color:var(--ink)}
 .state{border:1.5px solid var(--ink);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:800;white-space:nowrap;background:transparent;color:var(--ink)}
 .state.todo{border-style:dashed}
 .state.doing{background:var(--surface)}
 .state.done{background:var(--ink);color:var(--bg)}
-.docbar{display:flex;gap:4px;height:12px}
-.docbar i{flex:1;border-radius:2px;background:var(--surface-2);border:1px solid var(--line)}
-.docbar i.doing{background:var(--hl);border-color:transparent}
-.docbar i.done{background:var(--ink);border-color:var(--ink)}
+.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.res .grp{display:grid;gap:6px;align-content:start}
+.res h4{margin:0 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.res a{display:block;font-weight:700;font-size:14px}
+.res a small{display:block;font-weight:400;color:var(--muted);text-decoration:none;font-size:12.5px}
+.contacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.ccard{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:4px;padding:14px 16px;display:grid;gap:4px;align-content:start;box-shadow:var(--shadow);min-width:0}
+.ccard .d{font-weight:800}
+.ccard .o{color:var(--muted);font-size:13px;margin-top:-3px}
+.ccard .line{display:flex;gap:6px;align-items:center;font-size:13.5px;min-width:0}
+.ccard .line span{overflow-wrap:anywhere;min-width:0}
+.copy{border:1px solid var(--line);background:var(--surface-2);border-radius:5px;font-size:11px;font-weight:700;padding:1px 6px}
+.ccard .acts{display:flex;gap:4px;margin-top:4px}
 
-/* forms */
-details.add{background:var(--surface);border:1.5px dashed var(--line);border-radius:6px;padding:12px 16px}
-details.add summary{cursor:pointer;font-weight:700;list-style:none}
-details.add summary::-webkit-details-marker{display:none}
-details.add summary::before{content:"+ ";color:var(--brass)}
-details.add[open] summary::before{content:"– "}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
-.form label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
-.form .wide{grid-column:1/-1}
-.form input,.form select,.form textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:8px 10px;font-size:14px;width:100%;min-width:0}
-.form textarea{min-height:60px;resize:vertical}
-.btn{border:0;background:var(--olive);color:var(--olive-ink);font-weight:700;border-radius:8px;padding:10px 18px;justify-self:start}
-.btn.ghost{background:none;border:1.5px solid var(--ink);color:var(--ink)}
-.filters{display:flex;gap:8px;flex-wrap:wrap}
-.filters button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 12px;font-weight:600;font-size:13px;color:var(--muted)}
-.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* ambition */
+.ow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.owb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px;border-radius:6px;background:var(--line)}
+.owb.center{background:var(--brass)}
+.owc{position:relative;min-height:86px;background:var(--surface);border-radius:3px;display:flex;min-width:0}
+.owc textarea,.owc input[type=text]{width:100%;border:0;background:transparent;resize:none;font-size:11.5px;line-height:1.3;padding:5px 5px 20px;border-radius:3px}
+.owc input[type=checkbox]{position:absolute;right:4px;bottom:4px;width:14px;height:14px;accent-color:var(--good)}
+.owc.done{background:var(--good-soft)}
+.owc.pillar{background:var(--brass-soft)}
+.owc.pillar textarea{font-weight:700;padding-bottom:5px}
+.owc.mirror{align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:12px;padding:4px;background:var(--brass-soft);overflow-wrap:anywhere}
+.owc.goal{align-items:center;justify-content:center;text-align:center;font-family:var(--f-display);font-size:17px;padding:6px;overflow-wrap:anywhere;background:var(--folder);color:var(--folder-ink)}
+.why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.why label,.pform label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.why textarea,.pform textarea,.pform input,.am-top input{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:8px 10px;font-size:14px;width:100%;min-width:0;color:var(--ink)}
+.why textarea{min-height:76px;resize:vertical}
+.am-top{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.am-top label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.am-top input#amGoal{font-family:var(--f-display);font-size:26px}
+.routines{display:grid;gap:0}
+.routines .r{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:9px 0;border-top:1px dashed var(--line)}
+.routines .r:first-child{border-top:0}
+.dots{display:flex;gap:3px}
+.dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--muted)}
+.dots i.on{background:var(--good);border-color:var(--good)}
+.diary{display:grid;gap:10px}
+.diary .e{border-left:3px solid var(--brass);padding:4px 12px}
+.diary .e .d{font-family:var(--f-hand);font-size:20px;color:var(--brass)}
+.inline-form{display:flex;gap:8px;flex-wrap:wrap}
+.inline-form input,.inline-form textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:8px 10px;font-size:14px;flex:1 1 200px;min-width:0}
+.pform{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.pform .wide{grid-column:1/-1}
+.pform textarea{min-height:90px;resize:vertical}
 
-/* popups */
-.veil{position:fixed;inset:0;z-index:50;background:rgba(15,10,5,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:fade .35s ease;overflow-y:auto}
-.card-q{background:var(--surface);color:var(--ink);border-radius:6px;max-width:480px;width:100%;padding:30px 28px 24px;display:grid;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);animation:rise .45s cubic-bezier(.2,.8,.2,1);position:relative}
+/* overlays */
+.veil{position:fixed;inset:0;z-index:60;background:rgba(15,10,5,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:fade .3s ease;overflow-y:auto}
+.card-q{background:var(--surface);color:var(--ink);border-radius:6px;max-width:480px;width:100%;padding:30px 28px 24px;display:grid;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);animation:rise .4s cubic-bezier(.2,.8,.2,1);position:relative}
 .card-q.sticky{background:var(--brass-soft);border-radius:2px;transform:rotate(-1.5deg);padding-top:40px}
 .card-q.sticky::before{content:"";position:absolute;top:-12px;left:50%;width:120px;height:28px;margin-left:-60px;background:rgba(255,255,255,.55);transform:rotate(2deg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.lamp{display:none}
 .card-q .eyebrow{font-family:var(--f-hand);text-transform:none;letter-spacing:0;font-size:22px;color:var(--brass);font-weight:600}
-.card-q blockquote{margin:0;font-family:var(--f-quote);font-size:32px;line-height:1.12;text-wrap:pretty}
+.card-q blockquote{margin:0;font-family:var(--f-display);font-size:32px;line-height:1.12;text-wrap:pretty}
 .card-q cite{font-style:normal;color:var(--muted);font-weight:700;font-size:13.5px}
 .card-q .acts{display:flex;gap:10px;flex-wrap:wrap}
 .card-q h2{font-size:38px}
 .card-q p{margin:0;color:var(--muted)}
+.card-q.wide{max-width:720px;max-height:calc(100vh - 32px);overflow-y:auto}
 .plist{display:grid;gap:8px}
 .plist button{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:var(--folder);color:var(--folder-ink);border-radius:4px 8px 8px 8px;padding:12px 14px;font-weight:700;font-size:16px;text-align:left}
-.plist button:hover{border-color:var(--ink)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.form label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted);min-width:0}
+.form .wide{grid-column:1/-1}
+.form .ck{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px}
+.form .ck input{width:18px;height:18px;accent-color:var(--brass)}
+.form input,.form select,.form textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:8px 10px;font-size:14px;width:100%;min-width:0;color:var(--ink)}
+.form textarea{min-height:70px;resize:vertical}
+.form .sec{grid-column:1/-1;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--brass);font-weight:800;border-bottom:1px solid var(--line);padding-bottom:4px;margin-top:6px}
+.form-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.form-acts .btn.danger{margin-left:auto}
+.drawer-veil{position:fixed;inset:0;z-index:55;background:rgba(15,10,5,.45)}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(640px,100%);background:var(--surface);z-index:56;box-shadow:-20px 0 50px -20px rgba(0,0,0,.5);display:flex;flex-direction:column;border-left:6px solid var(--folder)}
+.dw-head{padding:max(18px,env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) 14px 22px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.dw-head h2{font-size:32px}
+.dw-head .x{margin-left:auto;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;width:34px;height:34px;font-size:18px;flex-shrink:0}
+.dw-body{overflow-y:auto;padding:18px max(22px,env(safe-area-inset-right,0px)) 40px 22px;display:grid;gap:20px;align-content:start}
+.dw-sec{display:grid;gap:8px}
+.dw-sec h4{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--brass);font-weight:800;border-bottom:1px solid var(--line);padding-bottom:5px}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:5px 12px;font-size:14px}
+.kv dt{color:var(--muted);font-weight:700}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.cklist{display:grid;gap:6px}
+.cklist label{display:flex;gap:10px;align-items:center;font-size:14px}
+.cklist input{width:18px;height:18px;accent-color:var(--brass)}
+.rates{display:grid;gap:8px}
+.rates .r{display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;font-size:14px}
+.rates input{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;text-align:right}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-weight:700;font-size:14px;z-index:80;box-shadow:var(--shadow)}
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{translate:0 14px;opacity:.4}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32px}
-@media (max-width:820px){.hero,.grid2{grid-template-columns:1fr}.count .big{font-size:58px}}
+@media (max-width:860px){.hero,.grid2,.grid3{grid-template-columns:1fr}.count .big{font-size:58px}.why,.am-top{grid-template-columns:1fr}.ow{grid-template-columns:1fr}.plan .row{grid-template-columns:1fr}.kv{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <header class="top">
   <div class="wrap">
-    <div class="brand"><b>Masters Cove</b><span id="brandName">masters cove</span></div>
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" data-view="home" aria-selected="true">Dashboard</button>
-      <button role="tab" data-view="plan" aria-selected="false">Planner</button>
-      <button role="tab" data-view="programs" aria-selected="false">Programs</button>
-      <button role="tab" data-view="docs" aria-selected="false">Documents</button>
-    </nav>
-    <button class="icon-btn" id="quoteBtn" type="button">A little push ✦</button>
-    <div class="menu-wrap">
-      <button class="icon-btn" id="profileBtn" type="button" aria-haspopup="true" aria-expanded="false">Profile ▾</button>
-      <div class="menu" id="profileMenu" hidden>
-        <div class="who eyebrow" id="menuWho"></div>
-        <button type="button" id="mSwitch">Switch profile</button>
-        <button type="button" id="mExport">Download backup</button>
-        <label for="importFile">Restore from backup<input type="file" id="importFile" accept="application/json,.json" hidden></label>
-        <hr>
-        <button type="button" id="mDelete">Delete this profile…</button>
+    <div class="bar1">
+      <div class="brand"><b>Masters Cove</b><span id="brandName">your study desk</span></div>
+      <button class="icon-btn" id="quoteBtn" type="button">A little push ✦</button>
+      <div class="menu-wrap">
+        <button class="icon-btn" id="profileBtn" type="button" aria-haspopup="true" aria-expanded="false">Profile ▾</button>
+        <div class="menu" id="profileMenu" hidden>
+          <div class="who eyebrow" id="menuWho"></div>
+          <button type="button" id="mSwitch">Switch profile</button>
+          <button type="button" id="mIcs">Add deadlines to calendar (.ics)</button>
+          <button type="button" id="mCsv">Export programs (CSV)</button>
+          <button type="button" id="mExport">Download backup</button>
+          <label for="importFile">Restore from backup<input type="file" id="importFile" accept="application/json,.json" hidden></label>
+          <hr>
+          <button type="button" id="mDelete">Delete this profile…</button>
+        </div>
       </div>
     </div>
+    <nav class="tabs" role="tablist" aria-label="Sections" id="tabs"></nav>
   </div>
 </header>
 
 <main class="wrap">
   <div id="note" class="status-note" hidden></div>
 
+  <!-- DASHBOARD -->
   <section class="view" data-view="home">
     <div class="hero">
       <div class="greet">
         <div class="eyebrow" id="today">Today</div>
         <h1 id="hello">Hello</h1>
-        <p>Your masters plan, one cozy step at a time. Everything you tick off is saved on this device.</p>
-        <div class="progress"><div class="bar" aria-hidden="true"><i id="barFill" style="width:0%"></i></div><b class="tnum" id="barTxt">0 / 0 done</b></div>
+        <p>Your masters plan in one place: deadlines, programs, applications, documents, writing and funding.</p>
+        <div class="progress"><div class="bar" aria-hidden="true"><i id="barFill" style="width:0%"></i></div><b class="tnum" id="barTxt">0 / 0 tasks done</b></div>
+        <div class="strip" id="gateStrip" aria-label="Readiness"></div>
       </div>
       <div class="count">
         <div class="eyebrow">Next milestone</div>
@@ -268,81 +427,258 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32p
       </div>
     </div>
 
+    <div class="kpis" id="kpis"></div>
+
+    <div class="panel">
+      <div class="search-wrap">
+        <label class="sr" for="gSearch">Search everything</label>
+        <input type="search" id="gSearch" placeholder="Search tasks, programs, documents, contacts, recommenders…" autocomplete="off">
+        <div class="results" id="gResults"></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-head"><h2>Deadline radar</h2><span class="eyebrow">Next 30 days, everything</span><div class="right"><button class="link" type="button" id="radarIcs">Add to calendar</button></div></div>
+        <ul class="radar" id="radar"></ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Coming up</h2><span class="eyebrow">Tasks · 14 days &amp; overdue</span><div class="right"><button class="link" data-go="plan" type="button">Planner →</button></div></div>
+        <ul class="tasks" id="upcoming"></ul>
+      </div>
+    </div>
+
     <div class="timeline">
       <div class="panel-head"><h2>The road ahead</h2><span class="eyebrow">Milestones</span></div>
       <div class="tl" id="timeline"></div>
     </div>
 
-    <div class="grid2">
+    <div class="grid3">
       <div class="panel">
-        <div class="panel-head"><h2>Coming up</h2><span class="eyebrow">Next 14 days &amp; overdue</span><button class="link" data-go="plan">Full planner →</button></div>
-        <ul class="tasks" id="upcoming"></ul>
+        <div class="panel-head"><h3>Programs</h3><div class="right"><button class="link" data-go="programs" type="button">All →</button></div></div>
+        <div id="miniProg"></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Programs</h2><button class="link" data-go="programs">All programs →</button></div>
-        <div class="prog-sum" id="progSum"></div>
-        <div class="mini-prog" id="miniProg"></div>
+        <div class="panel-head"><h3>List balance</h3></div>
+        <div class="balance" id="balance"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Budget</h3><div class="right"><button class="link" data-go="funding" type="button">Funding →</button></div></div>
+        <div class="money" id="budget"></div>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h2>Documents &amp; attestation</h2><span class="eyebrow tnum" id="docCount"></span><button class="link" data-go="docs">Open checklist →</button></div>
+      <div class="panel-head"><h3>Documents &amp; attestation</h3><span class="eyebrow tnum" id="docCount"></span><div class="right"><button class="link" data-go="docs" type="button">Open →</button></div></div>
       <div class="docbar" id="docBar"></div>
     </div>
   </section>
 
+  <!-- PLANNER -->
   <section class="view" data-view="plan" hidden>
-    <div class="panel-head"><h2 style="font-size:28px">Planner</h2></div>
+    <div class="page-head"><h2>Planner</h2><p>Tasks with priorities and links to programs, the readiness gates that block applications, and your phase plan.</p></div>
+    <div class="toolbar">
+      <input type="search" id="tSearch" placeholder="Search tasks" aria-label="Search tasks">
+      <select id="tPrio" aria-label="Priority"><option value="All">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select>
+      <button class="btn" type="button" data-add="tasks">+ Add task</button>
+      <button class="btn ghost" type="button" id="planIcs">Add to calendar</button>
+    </div>
     <div class="filters" id="catFilters"></div>
-    <details class="add">
-      <summary>Add a task</summary>
-      <form class="form" id="taskForm">
-        <label class="wide">Task<input id="tTitle" required maxlength="140" placeholder="e.g. Email admissions about GRE waiver"></label>
-        <label>Due<input id="tDue" type="date" required></label>
-        <label>Category<select id="tCat"></select></label>
-        <label>Milestone?<select id="tMile"><option value="no">No</option><option value="yes">Yes, show on timeline</option></select></label>
-        <label class="wide">Note<input id="tNote" maxlength="240" placeholder="Optional"></label>
-        <button class="btn" type="submit">Add task</button>
-      </form>
-    </details>
     <div id="phases" class="view"></div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Readiness gates</h2><span class="eyebrow tnum" id="gateCount"></span><div class="right"><button class="btn sm" type="button" data-add="gates">+ Add gate</button></div></div>
+      <p class="muted" style="margin:0">The things that block applications before anyone reads them. Each one notes what it holds up.</p>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Gate</th><th>Status</th><th>Detail</th><th>What it blocks</th><th></th></tr></thead><tbody id="gates"></tbody></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Phase plan</h2><div class="right"><button class="btn sm" type="button" data-add="plan">+ Add phase</button></div></div>
+      <div class="plan" id="planList"></div>
+    </div>
   </section>
 
+  <!-- PROGRAMS -->
   <section class="view" data-view="programs" hidden>
-    <div class="panel-head"><h2 style="font-size:28px">Programs</h2></div>
-    <div class="filters" id="countryFilters"></div>
-    <details class="add">
-      <summary>Add a program</summary>
-      <form class="form" id="progForm">
-        <label>Program<input id="pName" required maxlength="120" placeholder="MS Business Analytics"></label>
-        <label>University<input id="pSchool" required maxlength="120"></label>
-        <label>Country<select id="pCountry"><option>USA</option><option>Germany</option><option>Other</option></select></label>
-        <label>Status<select id="pStatus"></select></label>
-        <label>Application deadline<input id="pDeadline" type="date"></label>
-        <label>STEM designated?<select id="pStem"><option value="yes">Yes</option><option value="unknown" selected>Not checked</option><option value="no">No</option></select></label>
-        <label>Tests needed<input id="pTests" maxlength="120" placeholder="IELTS 6.5, GRE optional"></label>
-        <label>Link<input id="pLink" type="url" placeholder="https://"></label>
-        <label class="wide">Notes<textarea id="pNote" maxlength="500"></textarea></label>
-        <button class="btn" type="submit">Add program</button>
-      </form>
+    <div class="page-head"><h2>Programs</h2><p>Your research list. Each program has its requirements, costs, admissions contact, tier and fit score. Open one for the full file.</p></div>
+    <div class="toolbar">
+      <input type="search" id="pSearch" placeholder="Search programs, universities, cities" aria-label="Search programs">
+      <select id="pCountryF" aria-label="Country"></select>
+      <select id="pTierF" aria-label="Tier"></select>
+      <select id="pStatusF" aria-label="Status"></select>
+      <select id="pSort" aria-label="Sort">
+        <option value="deadline">Sort: deadline</option><option value="fit">Sort: fit score</option><option value="name">Sort: name</option><option value="cost">Sort: tuition</option>
+      </select>
+      <div class="seg" role="group" aria-label="View" id="pView">
+        <button type="button" data-pv="cards">Cards</button><button type="button" data-pv="table">Table</button><button type="button" data-pv="map">Map</button><button type="button" data-pv="timeline">Timeline</button>
+      </div>
+      <button class="btn" type="button" data-add="programs">+ Add program</button>
+    </div>
+    <div class="cmpbar" id="cmpBar" hidden></div>
+    <div id="progOut"></div>
+    <details class="panel">
+      <summary style="cursor:pointer;font-weight:700">How tiers work</summary>
+      <dl class="kv">
+        <dt><span class="tier tier-Likely">Likely</span></dt><dd>The published requirements sit at or below your profile today.</dd>
+        <dt><span class="tier tier-Target">Target</span></dt><dd>Holistic review, where your SOP, experience and letters can carry you over the line.</dd>
+        <dt><span class="tier tier-Reach">Reach</span></dt><dd>Averages above your profile, a hard test requirement or a very small intake.</dd>
+        <dt><span class="tier tier-Unrated">Unrated</span></dt><dd>Not researched enough to judge yet.</dd>
+      </dl>
+      <p class="muted" style="margin:0">A healthy list usually mixes all three: a few reaches, mostly targets, and at least one or two likely options.</p>
     </details>
-    <div class="programs" id="programs"></div>
   </section>
 
+  <!-- APPLICATIONS -->
+  <section class="view" data-view="apps" hidden>
+    <div class="page-head"><h2>Applications</h2><p>Every program you are applying to, moving from shortlist to decision. Each one tracks its portal checklist.</p></div>
+    <div class="stats" id="appStats"></div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="View" id="aView"><button type="button" data-av="board">Board</button><button type="button" data-av="table">Table</button></div>
+      <button class="btn" type="button" data-add="programs">+ Add program</button>
+    </div>
+    <div id="appOut"></div>
+  </section>
+
+  <!-- DOCUMENTS -->
   <section class="view" data-view="docs" hidden>
-    <div class="panel-head"><h2 style="font-size:28px">Documents</h2><span class="eyebrow">Tap a status to move it along</span></div>
-    <ul class="docs" id="docs"></ul>
-    <details class="add">
-      <summary>Add a document</summary>
-      <form class="form" id="docForm">
-        <label class="wide">Document<input id="dTitle" required maxlength="120" placeholder="e.g. Character certificate"></label>
-        <label class="wide">Note<input id="dNote" maxlength="200"></label>
-        <button class="btn" type="submit">Add document</button>
-      </form>
-    </details>
+    <div class="page-head"><h2>Documents</h2><p>Everything you need to collect, attest, sit or ask for, with the offices and links that get it done.</p></div>
+    <nav class="jump" aria-label="On this page"><a href="#sec-docs">Checklist</a><a href="#sec-tests">Test scores</a><a href="#sec-recs">Recommenders</a><a href="#sec-contacts">Contacts</a><a href="#sec-res">Official links</a></nav>
+
+    <div class="panel" id="sec-docs">
+      <div class="panel-head"><h2>Checklist</h2><span class="eyebrow">Tap a status to move it along</span><div class="right"><button class="btn sm" type="button" data-add="docs">+ Add document</button></div></div>
+      <ul class="docs" id="docs"></ul>
+    </div>
+
+    <div class="panel" id="sec-tests">
+      <div class="panel-head"><h2>Test scores</h2><div class="right"><button class="btn sm" type="button" data-add="tests">+ Add test</button></div></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Test</th><th>Target</th><th>Test date</th><th>Score</th><th>Reference no.</th><th>Valid until</th><th>Cost</th><th></th></tr></thead><tbody id="tests"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="sec-recs">
+      <div class="panel-head"><h2>Recommenders</h2><span class="eyebrow tnum" id="recCount"></span><div class="right"><button class="btn sm" type="button" data-add="recs">+ Add recommender</button></div></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Status</th><th>Asked on</th><th>Contact</th><th>Writing for</th><th></th></tr></thead><tbody id="recs"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="sec-contacts">
+      <div class="panel-head"><h2>Contacts</h2><span class="eyebrow">Offices and people you deal with</span><div class="right"><button class="btn sm" type="button" data-add="contacts">+ Add contact</button></div></div>
+      <div class="contacts" id="contacts"></div>
+    </div>
+
+    <div class="panel" id="sec-res">
+      <div class="panel-head"><h2>Official links</h2><span class="eyebrow">Always check details on the official site</span></div>
+      <div class="res" id="resources"></div>
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section class="view" data-view="writing" hidden>
+    <div class="page-head"><h2>Writing &amp; research</h2><p>Statements of purpose, essays, CV and writing samples, each next to the program it is for, with word counts against the limit.</p></div>
+    <div class="stats" id="wrStats"></div>
+    <div class="toolbar"><button class="btn" type="button" data-add="writing">+ Add document</button></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Document</th><th>For</th><th>Type</th><th>Status</th><th>Words</th><th>Due</th><th>Draft</th><th></th></tr></thead><tbody id="writing"></tbody></table></div>
+  </section>
+
+  <!-- FUNDING -->
+  <section class="view" data-view="funding" hidden>
+    <div class="page-head"><h2>Funding</h2><p>Scholarships, assistantships and other routes, and a matrix of what each program costs against what you expect to be covered.</p></div>
+    <div class="panel">
+      <div class="panel-head"><h2>Funding routes</h2><div class="right"><button class="btn sm" type="button" data-add="funding">+ Add route</button></div></div>
+      <div class="programs" id="fundRoutes"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Funding matrix</h2><span class="eyebrow">Per year, in each program's currency</span></div>
+      <p class="muted" style="margin:0">Enter tuition, living costs and the funding you expect. The gap updates as you type and is saved.</p>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Program</th><th>Currency</th><th>Tuition / yr</th><th>Living / yr</th><th>Expected funding / yr</th><th>Gap / yr</th></tr></thead><tbody id="fmx"></tbody><tfoot id="fmxTot"></tfoot></table></div>
+    </div>
+  </section>
+
+  <!-- SCORING -->
+  <section class="view" data-view="scoring" hidden>
+    <div class="page-head"><h2>Scoring</h2><p>Rate each program from 0 to 10 on each dimension (in the program's file). Its fit score is the weighted average, out of 100. Weights are relative and don't need to add up to 100.</p></div>
+    <div class="toolbar" id="presets"></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dimension</th><th>Weight</th><th>Share</th><th>What a 10 means</th><th></th></tr></thead><tbody id="dims"></tbody></table></div>
+    <div class="toolbar"><button class="btn" type="button" data-add="dims">+ Add dimension</button></div>
+    <div class="panel">
+      <div class="panel-head"><h2>Ranking</h2><span class="eyebrow">By fit score</span></div>
+      <div id="ranking"></div>
+    </div>
+  </section>
+
+  <!-- AMBITION -->
+  <section class="view" data-view="ambition" hidden>
+    <div class="page-head"><h2>Ambition</h2><p>Name the most ambitious goal you can, then break it down with the Harada method: your reasons, eight pillars, sixty-four actions, daily routines and a short diary.</p></div>
+    <div class="panel">
+      <div class="am-top">
+        <label>The goal<input id="amGoal" maxlength="120" placeholder="e.g. Admit to a STEM business analytics master's, Fall 2027"></label>
+        <label>Target date<input id="amDate" maxlength="40" placeholder="e.g. Fall 2027"></label>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Why this goal matters</h3></div>
+      <div class="why">
+        <label>For me, tangible<textarea data-why="st" placeholder="e.g. A degree that qualifies for STEM OPT"></textarea></label>
+        <label>For me, intangible<textarea data-why="si" placeholder="e.g. Confidence that I can do hard things"></textarea></label>
+        <label>For others, tangible<textarea data-why="ot" placeholder="e.g. Being close to family in the US"></textarea></label>
+        <label>For others, intangible<textarea data-why="oi" placeholder="e.g. Making my parents proud"></textarea></label>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Open Window 64</h3><span class="eyebrow tnum" id="owCount"></span></div>
+      <p class="muted" style="margin:0">The goal sits in the middle with eight pillars around it. Each pillar has eight actions. Tick an action when it's done or has become a habit.</p>
+      <div class="ow" id="ow"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-head"><h3>Daily routines</h3><span class="eyebrow">Last 7 days</span></div>
+        <form class="inline-form" id="rtForm"><input id="rtText" maxlength="80" placeholder="e.g. 45 minutes of IELTS reading" required><button class="btn sm" type="submit">Add</button></form>
+        <div class="routines" id="routines"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Diary</h3></div>
+        <form class="inline-form" id="dyForm"><input id="dyDid" maxlength="200" placeholder="What I did today" required><input id="dyNext" maxlength="200" placeholder="What I'll do differently tomorrow"><button class="btn sm" type="submit">Save entry</button></form>
+        <div class="diary" id="diary"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="view" data-view="profile" hidden>
+    <div class="page-head"><h2>Profile</h2><p>The facts every requirement is checked against. Saved as you type.</p></div>
+    <div class="panel">
+      <div class="pform" id="pform"></div>
+    </div>
   </section>
 </main>
-<footer class="wrap">Saved privately in this browser · download a backup now and then</footer>
+<footer class="wrap">Saved privately in this browser · download a backup from the Profile menu now and then</footer>
+
+<!-- program drawer -->
+<div class="drawer-veil" id="dwVeil" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-labelledby="dwTitle" role="dialog" aria-modal="true">
+  <div class="dw-head"><div style="min-width:0"><div class="eyebrow" id="dwEyebrow"></div><h2 id="dwTitle"></h2><div class="muted" id="dwSchool"></div></div><button class="x" id="dwClose" type="button" aria-label="Close">×</button></div>
+  <div class="dw-body" id="dwBody"></div>
+</aside>
+
+<!-- generic form -->
+<div class="veil" id="formVeil" hidden role="dialog" aria-modal="true" aria-labelledby="formTitle">
+  <form class="card-q wide" id="formEl" novalidate>
+    <h2 id="formTitle">Edit</h2>
+    <div class="form" id="formBody"></div>
+    <div class="form-acts">
+      <button class="btn" type="submit">Save</button>
+      <button class="btn ghost" type="button" id="formCancel">Cancel</button>
+      <button class="btn danger" type="button" id="formDel" hidden>Delete</button>
+    </div>
+  </form>
+</div>
+
+<!-- compare -->
+<div class="veil" id="cmpVeil" hidden role="dialog" aria-modal="true" aria-labelledby="cmpTitle">
+  <div class="card-q wide" style="max-width:1000px">
+    <h2 id="cmpTitle">Compare programs</h2>
+    <div class="tbl-wrap" id="cmpOut"></div>
+    <div class="form-acts"><button class="btn" type="button" id="cmpClose">Close</button><button class="btn ghost" type="button" id="cmpClear">Clear selection</button></div>
+  </div>
+</div>
 
 <!-- quote popup -->
 <div class="veil" id="veil" hidden role="dialog" aria-modal="true" aria-labelledby="qText">
@@ -360,14 +696,13 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32p
 <!-- profile picker -->
 <div class="veil" id="picker" hidden role="dialog" aria-modal="true" aria-labelledby="pkTitle">
   <div class="card-q">
-    <div class="lamp" aria-hidden="true"></div>
-    <h2 id="pkTitle">Whose cove is this?</h2>
+    <h2 id="pkTitle">Whose desk is this?</h2>
     <p id="pkHelp">Each profile keeps its own plan, saved only in this browser.</p>
     <div class="plist" id="pkList"></div>
-    <form class="form" id="newProfile" style="margin-top:0">
+    <form class="form" id="newProfile">
       <label class="wide">New profile name<input id="npName" required maxlength="60" placeholder="Your full name"></label>
       <label class="wide">Start with<select id="npTemplate">
-        <option value="starter">Masters starter plan (USA + Germany, Nov–Dec)</option>
+        <option value="starter">Masters starter plan (USA + Germany, Nov–Dec 2026)</option>
         <option value="blank">An empty plan</option>
       </select></label>
       <button class="btn" type="submit">Create profile</button>
@@ -375,305 +710,859 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32p
   </div>
 </div>
 
-<!-- delete confirm -->
+<!-- delete profile -->
 <div class="veil" id="confirmDel" hidden role="dialog" aria-modal="true" aria-labelledby="cdTitle">
   <div class="card-q">
     <h2 id="cdTitle">Delete this profile?</h2>
     <p>This removes <b id="cdName"></b> and its whole plan from this browser. It can't be undone unless you have a backup file.</p>
     <div class="acts">
-      <button class="btn" id="cdYes" type="button" style="background:var(--warn)">Delete profile</button>
+      <button class="btn danger" id="cdYes" type="button">Delete profile</button>
       <button class="btn ghost" id="cdNo" type="button">Keep it</button>
     </div>
   </div>
 </div>
+<div class="toast" id="toast" hidden></div>
 
 <script>
 (() => {
-const CATS = ["Research","Tests","SOP","Documents","Admin"];
-const STATUSES = ["Idea","Researching","Shortlisted","Applying","Submitted","Dropped"];
+"use strict";
+/* ================= constants ================= */
+const TABS = [["home","Dashboard"],["plan","Planner"],["programs","Programs"],["apps","Applications"],["docs","Documents"],["writing","Writing"],["funding","Funding"],["scoring","Scoring"],["ambition","Ambition"],["profile","Profile"]];
+const CATS = ["Research","Tests","SOP","Documents","Funding","Admin"];
+const PRIOS = ["High","Medium","Low"];
+const STATUSES = ["Researching","Shortlisted","In progress","Submitted","Under review","Accepted","Waitlisted","Rejected","Dropped"];
+const BOARD = ["Shortlisted","In progress","Submitted","Under review","Accepted","Waitlisted","Rejected"];
+const TIERS = ["Reach","Target","Likely","Unrated"];
+const COUNTRIES = ["USA","Germany","UK","Canada","Netherlands","Other"];
+const CURR = ["USD","EUR","GBP","CAD","PKR"];
+const CHECK = ["Portal account created","Application fee paid","Transcript uploaded","Test scores sent","SOP uploaded","CV uploaded","Recommenders invited","Recommendations received","Application submitted","Decision received"];
+const GATE_ST = ["Not started","In progress","Done","Not needed"];
+const DOC_ST = {todo:"Not started",doing:"In progress",done:"Ready"};
+const REC_ST = ["Not asked","Asked","Agreed","Submitted","Declined"];
+const WR_ST = ["Idea","Outline","Drafting","Review","Final","Sent"];
+const FUND_ST = ["Researching","Eligible","Applying","Applied","Awarded","Not eligible","Closed"];
 const QUOTES = [
-  ["The shortlist doesn't need to be perfect, {name}. It just needs to exist. Start with five.", "From your best friend"],
-  ["Confine yourself to the present.", "Marcus Aurelius, Meditations"],
-  ["While we are postponing, life speeds by.", "Seneca"],
-  ["One email to one university today beats zero emails to ten.", "Cozy Cove rule #1"],
-  ["Future {name}, holding an acceptance letter, is cheering for present {name} right now.", "From your best friend"],
-  ["Your SOP is just your story, told on purpose. Write the messy draft first.", "Cozy Cove rule #2"],
-  ["The journey of a thousand miles begins with a single step.", "Lao Tzu"],
-  ["You finished a whole degree. A few forms and an IELTS slot are nothing.", "From your best friend"],
-  ["Waste no more time arguing what a good person should be. Be one.", "after Marcus Aurelius"],
-  ["Done is better than perfect. Tick one box, then make tea.", "Cozy Cove rule #3"],
-  ["It does not matter how slowly you go, as long as you do not stop.", "attributed to Confucius"],
-  ["Rainy evening, warm lamp, one task. That's the whole plan for tonight.", "From your best friend"],
+  ["The shortlist doesn't need to be perfect, {name}. It just needs to exist. Start with five.","From your best friend"],
+  ["Confine yourself to the present.","Marcus Aurelius, Meditations"],
+  ["While we are postponing, life speeds by.","Seneca"],
+  ["One email to one admissions office today beats zero emails to ten.","Desk rule #1"],
+  ["Future {name}, holding an acceptance letter, is cheering for present {name} right now.","From your best friend"],
+  ["Your SOP is your story, told on purpose. Write the messy draft first.","Desk rule #2"],
+  ["The journey of a thousand miles begins with a single step.","Lao Tzu"],
+  ["You finished a whole degree. A few forms and an IELTS slot are nothing.","From your best friend"],
+  ["Waste no more time arguing what a good person should be. Be one.","after Marcus Aurelius"],
+  ["Done is better than perfect. Tick one box, then make tea.","Desk rule #3"],
+  ["It does not matter how slowly you go, as long as you do not stop.","attributed to Confucius"],
+  ["Discipline is choosing between what you want now and what you want most.","often attributed to Abraham Lincoln"],
+];
+const RESOURCES = [
+  ["Pakistan: degrees and attestation",[
+    ["HEC Degree Attestation e-Portal","https://eportal.hec.gov.pk","Apply online to attest your degree and transcript"],
+    ["Higher Education Commission","https://www.hec.gov.pk","Attestation rules, fees and office locations"],
+    ["Ministry of Foreign Affairs","https://mofa.gov.pk","Document attestation after HEC"],
+  ]],
+  ["English and admissions tests",[
+    ["IELTS: British Council Pakistan","https://www.britishcouncil.pk/exam/ielts","Test dates, centres and booking"],
+    ["IELTS: IDP","https://ielts.idp.com","Alternative IELTS booking"],
+    ["GRE General Test (ETS)","https://www.ets.org/gre.html","Registration and sending scores"],
+    ["GMAT (GMAC)","https://www.mba.com","Registration and sending scores"],
+  ]],
+  ["Studying in the USA",[
+    ["EducationUSA","https://educationusa.state.gov","Official US study advice"],
+    ["USEFP: Fulbright Pakistan","https://www.usefpakistan.org","Free advising and the Fulbright scholarship"],
+    ["STEM OPT Hub (Study in the States)","https://studyinthestates.dhs.gov/stem-opt-hub","What the STEM extension means after graduating"],
+    ["US Mission Pakistan: visas","https://pk.usembassy.gov/visas/","F-1 student visa appointments"],
+    ["WES credential evaluation","https://www.wes.org","Some US schools ask for a course-by-course evaluation"],
+  ]],
+  ["Studying in Germany",[
+    ["DAAD international programmes","https://www2.daad.de/deutschland/studienangebote/international-programmes/en/","Search English-taught master's programmes"],
+    ["Study in Germany","https://www.study-in-germany.de","Official guide to studying in Germany"],
+    ["uni-assist","https://www.uni-assist.de/en/","Many universities process applications through it"],
+    ["anabin degree recognition","https://anabin.kmk.org","Check how your degree and university are rated"],
+    ["German Missions in Pakistan","https://pakistan.diplo.de","Student visa and blocked account rules"],
+  ]],
 ];
 
-const starter = () => ({
-  tasks: [
-    ["Collect BBA transcript from university","2026-11-27","Documents",true,"Next week or the week after. Ask for a couple of sealed copies too."],
-    ["List STEM-designated analytics / business programs in the USA (no MBA)","2026-11-22","Research",false,"Look for MS Business Analytics / MS Analytics with research or capstone work."],
-    ["Decide what to study in Germany","2026-11-22","Research",false,"Pick the field first so the German shortlist makes sense."],
-    ["List German programs for that field","2026-11-26","Research",false,"Check if they apply through uni-assist or directly."],
-    ["Note the tests each program needs (IELTS band, GRE/GMAT)","2026-11-28","Tests",false,""],
-    ["Note the documents each program needs","2026-11-28","Documents",false,""],
-    ["Check degree attestation steps (HEC + MOFA)","2026-11-29","Documents",false,"Find out the order, fees and how long each step takes."],
-    ["Shortlist universities","2026-11-30","Research",true,"Before December. Aim for 5–8 across USA and Germany."],
-    ["Pick an IELTS date and test centre","2026-12-08","Tests",false,""],
-    ["Book IELTS","2026-12-15","Tests",true,"By mid-December."],
-    ["Outline the SOP: why analytics, why now, career goal","2026-12-04","SOP",false,""],
-    ["Write first SOP draft","2026-12-13","SOP",true,"December week 2. Messy is fine."],
-    ["Ask 2–3 people for recommendation letters","2026-12-20","Admin",false,""],
-    ["Update CV","2026-12-20","Admin",false,""],
-  ].map(([title,due,cat,milestone,note],i)=>({id:"t"+(i+1),title,due,cat,milestone,note,done:false,created:i+1})),
-  programs: [
-    ["MS Business Analytics","University of Texas at Austin (McCombs)","USA","Researching"],
-    ["MS Business Analytics & Information Management","Purdue University (Daniels)","USA","Researching"],
-    ["MS Business Analytics","University of Minnesota (Carlson)","USA","Researching"],
-    ["Germany program (field to decide)","To be decided","Germany","Idea"],
-  ].map(([name,school,country,status],i)=>({id:"p"+(i+1),name,school,country,status,deadline:"",stem:"unknown",tests:"",link:"",
-    note: country==="USA" ? "Suggested to research. Confirm STEM status, deadline and tests on the program page." : "Decide the field first, then replace this card with real programs.", created:i+1})),
-  docs: [
-    ["BBA transcript","Collect next week or the week after."],["BBA degree",""],["HEC degree attestation","Check if it's needed before MOFA."],
-    ["MOFA attestation",""],["Passport","Check it's valid well past the start date."],["IELTS score report",""],["Statement of purpose",""],
-    ["Recommendation letters",""],["CV / resume",""],["Proof of funds","Bank statement for a US I-20; blocked account for Germany."],
-  ].map(([title,note],i)=>({id:"d"+(i+1),title,note,status:"todo",order:i+1})),
-});
-const blank = () => ({tasks:[], programs:[], docs:[]});
-
-/* ---------- storage (this browser only) ---------- */
+/* ================= storage ================= */
 const LS = {
-  get(k,d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch{ return d; } },
-  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } },
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch{ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch{ return false; } },
   del(k){ try{ localStorage.removeItem(k); }catch{} }
 };
-const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
-let profiles = LS.get("cove.profiles", []);
-let active = LS.get("cove.active", null);
-let data = blank();
-const ui = { view: LS.get("cove.view","home"), cat:"All", country:"All" };
+const uid = () => Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+let profiles = LS.get("cove.profiles",[]);
+let active = LS.get("cove.active",null);
+let D = null;
+const ui = { view: LS.get("cove.view","home"), cat:"All", prio:"All", tq:"", pq:"", pc:"All", pt:"All", ps:"Active", sort:"deadline", pv: LS.get("cove.pv","cards"), av: LS.get("cove.av","board"), cmp:new Set(), drawer:null };
 
-function loadProfile(id){
-  active = id; LS.set("cove.active", id);
-  data = Object.assign(blank(), LS.get("cove.data."+id, blank()));
-  render();
-}
-function save(){
-  if (!active) return;
-  if (!LS.set("cove.data."+active, data)) note("Couldn't save in this browser. Private browsing mode can block saving; try a normal window.");
-  render();
-}
-const me = () => profiles.find(p=>p.id===active);
-const firstName = () => (me()?.name || "friend").split(/\s+/)[0];
+/* ================= templates ================= */
+const defaultDims = () => [
+  {id:"d1",name:"Curriculum fit",weight:30,desc:"Modules match what I want to learn; real analytics, not repeated BBA content"},
+  {id:"d2",name:"Career outcomes",weight:25,desc:"Strong placement, employers I want, STEM OPT where relevant"},
+  {id:"d3",name:"Cost & funding",weight:20,desc:"Affordable after realistic funding"},
+  {id:"d4",name:"Location & family",weight:15,desc:"Close to family or a city I want to live in"},
+  {id:"d5",name:"Admission chance",weight:10,desc:"My profile clears the published bar comfortably"},
+];
+const defaultAmbition = (pillars) => ({goal:"",date:"",why:{st:"",si:"",ot:"",oi:""},
+  pillars:(pillars||Array(8).fill("")).map(n=>({name:n,actions:Array.from({length:8},()=>({t:"",done:false}))})), routines:[], diary:[]});
+const blank = () => ({v:2,tasks:[],gates:[],plan:[],programs:[],docs:[],tests:[],recs:[],contacts:[],writing:[],funding:[],dims:defaultDims(),ambition:defaultAmbition(),profile:{}});
 
-/* ---------- helpers ---------- */
+function starterExtras(d){
+  d.gates = [
+    ["Book IELTS","Book by mid-December","Every application"],
+    ["IELTS score report","Valid for 2 years from the test date","Every application"],
+    ["BBA transcript (sealed copies)","Collect from the examinations office","Every application"],
+    ["HEC degree attestation","Usually needed before MOFA","MOFA attestation and attested copies"],
+    ["MOFA attestation","After HEC","Programs that ask for attested documents"],
+    ["SOP first draft","December week 2","All applications"],
+    ["2–3 recommenders confirmed","Give them at least 4 weeks","All applications"],
+    ["Updated CV","","All applications"],
+    ["Proof of funds","US: bank statement for the I-20 · Germany: blocked account","I-20 and visa"],
+    ["Passport valid","Valid well beyond the start date","Visa"],
+  ].map(([title,detail,blocks],i)=>({id:"g"+(i+1),title,detail,blocks,status:"Not started"}));
+  d.plan = [
+    ["Now – 30 Nov","Research and shortlist","Decide the German field, list US STEM analytics programs, note the tests and documents each needs, collect the transcript, check HEC and MOFA steps."],
+    ["1 – 15 Dec","IELTS booked, SOP drafted","Pick a date and centre and book IELTS by mid-December. First SOP draft by December week 2."],
+    ["Late Dec – Jan","Tests, letters, attestation","Prepare for IELTS, confirm recommenders, start HEC then MOFA attestation, update the CV."],
+    ["Jan – Mar","Applications","Tailor the SOP per program, submit, and track each portal and fee. Check every program's own deadline."],
+    ["Spring 2027","Decisions, funding, visa","Compare offers and funding, accept one, arrange proof of funds, then the I-20 or German visa appointment."],
+  ].map(([when,title,body],i)=>({id:"ph"+(i+1),when,title,body}));
+  d.contacts = [
+    {dept:"Examinations / Registrar office",org:"Your university",note:"Transcripts, degree and sealed copies. Add the office email and phone."},
+    {dept:"Degree attestation",org:"HEC Pakistan",link:"https://www.hec.gov.pk",note:"Apply online through the HEC e-portal."},
+    {dept:"Attestation section",org:"Ministry of Foreign Affairs",link:"https://mofa.gov.pk"},
+    {dept:"IELTS registration",org:"British Council Pakistan",link:"https://www.britishcouncil.pk/exam/ielts"},
+    {dept:"Free US study advising",org:"USEFP / EducationUSA",link:"https://www.usefpakistan.org"},
+    {dept:"Visa section",org:"German Missions in Pakistan",link:"https://pakistan.diplo.de"},
+  ].map((c,i)=>Object.assign({id:"c"+(i+1),name:"",email:"",phone:"",link:"",note:""},c));
+  d.funding = [
+    {name:"Fulbright (USEFP)",type:"Scholarship",carries:"USA",covers:"Tuition, living, travel",status:"Researching",link:"https://www.usefpakistan.org",note:"Check the next cycle's dates on USEFP."},
+    {name:"Program merit scholarships & assistantships",type:"University aid",carries:"USA",covers:"Partial tuition, sometimes a stipend",status:"Researching",note:"Ask each admissions office and note it in the program's file."},
+    {name:"DAAD scholarships",type:"Scholarship",carries:"Germany",covers:"Monthly stipend, insurance, travel",status:"Researching",link:"https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/"},
+    {name:"Low or no tuition at public universities",type:"Other",carries:"Germany",covers:"Tuition",status:"Researching",note:"Most German states charge little or no tuition; Baden-Württemberg charges non-EU students. Check each university."},
+  ].map((f,i)=>Object.assign({id:"f"+(i+1),deadline:"",amount:"",currency:"USD",link:"",note:""},f));
+  d.writing = [
+    {id:"w1",title:"Statement of purpose (master draft)",prog:"",type:"Statement of purpose",status:"Idea",words:"",limit:1000,due:"2026-12-13",link:"",note:"Why analytics, why now, career goal"},
+    {id:"w2",title:"CV / resume",prog:"",type:"CV",status:"Idea",words:"",limit:"",due:"2026-12-20",link:"",note:""},
+  ];
+  d.tests = [{id:"x1",test:"IELTS Academic",target:"",date:"",score:"",ref:"",valid:"",cost:"",note:"Use the highest band any of your programs asks for"}];
+  d.ambition = defaultAmbition(["Test scores","SOP & writing","Documents & attestation","Shortlist & research","Funding","Recommendations","Profile & skills","Routine & wellbeing"]);
+  d.ambition.goal = "Admit to a STEM business analytics master's";
+  d.ambition.date = "Fall 2027";
+  return d;
+}
+function starter(){
+  const d = blank();
+  d.tasks = [
+    ["Collect BBA transcript from university","2026-11-27","Documents",true,"High","Next week or the week after. Ask for a couple of sealed copies too."],
+    ["List STEM-designated analytics / business programs in the USA (no MBA)","2026-11-22","Research",false,"High","Look for MS Business Analytics / MS Analytics with research or capstone work."],
+    ["Decide what to study in Germany","2026-11-22","Research",false,"High","Pick the field first so the German shortlist makes sense."],
+    ["List German programs for that field","2026-11-26","Research",false,"Medium","Check if they apply through uni-assist or directly."],
+    ["Note the tests each program needs (IELTS band, GRE/GMAT)","2026-11-28","Tests",false,"Medium",""],
+    ["Note the documents each program needs","2026-11-28","Documents",false,"Medium",""],
+    ["Check degree attestation steps (HEC + MOFA)","2026-11-29","Documents",false,"Medium","Find out the order, fees and how long each step takes."],
+    ["Shortlist universities","2026-11-30","Research",true,"High","Before December. Aim for 5–8 across USA and Germany."],
+    ["Pick an IELTS date and test centre","2026-12-08","Tests",false,"Medium",""],
+    ["Book IELTS","2026-12-15","Tests",true,"High","By mid-December."],
+    ["Outline the SOP: why analytics, why now, career goal","2026-12-04","SOP",false,"Medium",""],
+    ["Write first SOP draft","2026-12-13","SOP",true,"High","December week 2. Messy is fine."],
+    ["Ask 2–3 people for recommendation letters","2026-12-20","Admin",false,"Medium",""],
+    ["Update CV","2026-12-20","Admin",false,"Low",""],
+  ].map(([title,due,cat,milestone,prio,note],i)=>({id:"t"+(i+1),title,due,cat,milestone,prio,note,prog:"",done:false,created:i+1}));
+  d.programs = [
+    ["MS Business Analytics","University of Texas at Austin (McCombs)","USA","Austin"],
+    ["MS Business Analytics & Information Management","Purdue University (Daniels)","USA","West Lafayette"],
+    ["MS Business Analytics","University of Minnesota (Carlson)","USA","Minneapolis"],
+    ["Germany program (field to decide)","To be decided","Germany",""],
+  ].map(([name,school,country,city],i)=>normProg({id:"p"+(i+1),name,school,country,city,field:country==="USA"?"Business analytics":"To decide",
+    status:"Researching",note:country==="USA"?"Suggested to research. Confirm STEM status, deadline and tests on the program page.":"Decide the field first, then replace this card with real programs.",created:i+1}));
+  d.docs = [
+    ["BBA transcript","Collect next week or the week after.","Examinations office"],["BBA degree","","Examinations office"],["HEC degree attestation","Check if it's needed before MOFA.","HEC"],
+    ["MOFA attestation","","MOFA"],["Passport","Check it's valid well past the start date.","Passport office"],["IELTS score report","",""],["Statement of purpose","",""],
+    ["Recommendation letters","",""],["CV / resume","",""],["Proof of funds","Bank statement for a US I-20; blocked account for Germany.","Bank"],
+  ].map(([title,note,office],i)=>normDoc({id:"d"+(i+1),title,note,office,status:"todo",order:i+1}));
+  return starterExtras(d);
+}
+function normProg(p){
+  const base = {name:"",school:"",country:"USA",city:"",field:"",tier:"Unrated",status:"Researching",intake:"Fall 2027",duration:"",deadline:"",decision:"",
+    currency:"USD",tuition:"",living:"",expFunding:"",fee:"",ielts:"",gre:"Not checked",gpa:"",stem:"unknown",scholar:"",link:"",portal:"",cName:"",cEmail:"",cPhone:"",note:"",ratings:{},check:{},created:Date.now()};
+  const o = Object.assign(base,p);
+  if (o.status==="Idea") o.status="Researching";
+  if (o.status==="Applying") o.status="In progress";
+  if (!p.currency && o.country==="Germany") o.currency="EUR";
+  o.ratings = o.ratings||{}; o.check = o.check||{};
+  return o;
+}
+function normDoc(d){ return Object.assign({title:"",status:"todo",due:"",expiry:"",copies:"",file:"",office:"",contact:"",link:"",note:"",order:Date.now()},d); }
+function migrate(raw){
+  const d = Object.assign(blank(), raw||{});
+  if (!raw || !raw.v){
+    const fromStarter = (d.tasks||[]).some(t=>t.id==="t8" && /Shortlist/.test(t.title||""));
+    if (fromStarter) starterExtras(d);
+  }
+  d.tasks = (d.tasks||[]).map(t=>Object.assign({prio:"Medium",prog:"",note:"",cat:"Admin",milestone:false,done:false},t));
+  d.programs = (d.programs||[]).map(normProg);
+  d.docs = (d.docs||[]).map(normDoc);
+  if (!d.dims || !d.dims.length) d.dims = defaultDims();
+  if (!d.ambition || !d.ambition.pillars) d.ambition = defaultAmbition();
+  d.profile = d.profile||{};
+  d.v = 2;
+  return d;
+}
+
+/* ================= helpers ================= */
 const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
-const parse = s => { if(!s) return null; const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
-const daysTo = s => { const d = parse(s); return d ? Math.round((d - today0())/86400000) : null; };
-const fmt = s => { const d = parse(s); return d ? d.toLocaleDateString(undefined,{day:"numeric",month:"short"}) : "No date"; };
-const rel = n => n==null ? "" : n<0 ? `${-n} day${n===-1?"":"s"} late` : n===0 ? "today" : n===1 ? "tomorrow" : `in ${n} days`;
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parse = s => { if(!s) return null; const [y,m,dd]=String(s).split("-").map(Number); if(!y||!m||!dd) return null; return new Date(y,m-1,dd); };
+const daysTo = s => { const d=parse(s); return d?Math.round((d-today0())/86400000):null; };
+const fmt = s => { const d=parse(s); return d?d.toLocaleDateString(undefined,{day:"numeric",month:"short"}):"No date"; };
+const fmtY = s => { const d=parse(s); return d?d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}):"—"; };
+const rel = n => n==null?"":n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"today":n===1?"tomorrow":`in ${n} days`;
+const num = v => { const n=parseFloat(v); return isFinite(n)?n:0; };
+const money = (n,c) => { if(n===""||n==null||!isFinite(+n)) return "—"; try{ return new Intl.NumberFormat(undefined,{style:"currency",currency:c||"USD",maximumFractionDigits:0}).format(+n); }catch{ return (c||"")+" "+Math.round(+n); } };
+const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";
+const flag = c => ({USA:"US",Germany:"DE",UK:"UK",Canada:"CA",Netherlands:"NL"})[c]||"··";
+const me = () => profiles.find(p=>p.id===active);
+const firstName = () => (me()?.name||"friend").split(/\s+/)[0];
+const progName = id => { const p=D.programs.find(x=>x.id===id); return p?`${p.name}${p.school?" · "+p.school.replace(/\s*\(.*\)/,""):""}`:""; };
+const activeProg = p => !["Dropped","Rejected"].includes(p.status);
 function note(msg){ const n=$("#note"); n.hidden=!msg; n.textContent=msg||""; }
-const dueChip = t => {
-  if (t.done) return `<span class="chip ok">Done</span>`;
-  const n = daysTo(t.due); if (n==null) return "";
-  return `<span class="chip ${n<0?"late":n<=7?"soon":""} tnum">${esc(fmt(t.due))} · ${rel(n)}</span>`;
-};
-const sortTasks = a => [...a].sort((x,y)=>(x.done-y.done) || (x.due||"9").localeCompare(y.due||"9") || ((x.created||0)-(y.created||0)));
-const flag = c => c==="Germany"?"DE":c==="USA"?"US":"··";
-
-/* ---------- views ---------- */
-function show(v){
-  ui.view = v; LS.set("cove.view", v);
-  document.querySelectorAll("section.view[data-view]").forEach(s=>s.hidden = s.dataset.view!==v);
-  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===v));
-  window.scrollTo({top:0});
+let toastT; function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2200); }
+function download(name, text, type){
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
-document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.view));
-document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+async function copy(text){
+  try{ await navigator.clipboard.writeText(text); toast("Copied"); }
+  catch{ const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); toast("Copied");}catch{ toast("Couldn't copy. Select the text instead."); } ta.remove(); }
+}
+function persist(){ if(!active) return; if(!LS.set("cove.data."+active,D)) note("Couldn't save in this browser. Private browsing can block saving; try a normal window."); }
+function save(){ persist(); render(); }
+function fit(p){
+  let w=0,s=0; D.dims.forEach(d=>{ const r=p.ratings?.[d.id]; const wt=num(d.weight); if(wt>0 && r!=="" && r!=null && isFinite(+r)){ w+=wt; s+=wt*Math.max(0,Math.min(10,+r)); } });
+  return w?Math.round(s/w*10):null;
+}
+const checkPct = p => Math.round(CHECK.filter((_,i)=>p.check?.[i]).length/CHECK.length*100);
+const dueChip = (date, done) => {
+  if (done) return `<span class="chip ok">Done</span>`;
+  const n=daysTo(date); if(n==null) return "";
+  return `<span class="chip ${n<0?"late":n<=7?"soon":""} tnum">${esc(fmt(date))} · ${rel(n)}</span>`;
+};
+const prioChip = p => `<span class="chip ${p==="High"?"hi":p==="Low"?"lo":"amb"}">${esc(p||"Medium")}</span>`;
+
+/* ================= events (radar + calendar) ================= */
+function events(){
+  const ev=[];
+  D.tasks.filter(t=>!t.done&&t.due).forEach(t=>ev.push({date:t.due,kind:"Task",label:t.title,sub:t.prog?progName(t.prog):"",go:["task",t.id]}));
+  D.programs.filter(activeProg).forEach(p=>{
+    if(p.deadline && !["Submitted","Under review","Accepted","Waitlisted"].includes(p.status)) ev.push({date:p.deadline,kind:"Deadline",label:`${p.name} application`,sub:p.school,go:["prog",p.id]});
+    if(p.decision && !["Accepted","Rejected","Waitlisted"].includes(p.status)) ev.push({date:p.decision,kind:"Decision",label:`${p.name} decision expected`,sub:p.school,go:["prog",p.id]});
+  });
+  D.docs.forEach(d=>{
+    if(d.due && d.status!=="done") ev.push({date:d.due,kind:"Document",label:d.title,sub:d.office,go:["docs",d.id]});
+    if(d.expiry) ev.push({date:d.expiry,kind:"Expires",label:`${d.title} expires`,sub:"",go:["docs",d.id]});
+  });
+  D.tests.forEach(x=>{ if(x.date && daysTo(x.date)>=0) ev.push({date:x.date,kind:"Test",label:x.test,sub:x.target?`Target ${x.target}`:"",go:["tests",x.id]});
+    if(x.valid) ev.push({date:x.valid,kind:"Expires",label:`${x.test} score expires`,sub:"",go:["tests",x.id]}); });
+  D.writing.filter(w=>w.due && !["Final","Sent"].includes(w.status)).forEach(w=>ev.push({date:w.due,kind:"Writing",label:w.title,sub:w.prog?progName(w.prog):"",go:["writing",w.id]}));
+  D.funding.filter(f=>f.deadline && !["Applied","Awarded","Not eligible","Closed"].includes(f.status)).forEach(f=>ev.push({date:f.deadline,kind:"Funding",label:f.name,sub:f.carries,go:["funding",f.id]}));
+  return ev.sort((a,b)=>a.date.localeCompare(b.date));
+}
+function exportIcs(){
+  const ev=events().filter(e=>daysTo(e.date)>=-1);
+  if(!ev.length){ toast("No dated items to add yet"); return; }
+  const icsEsc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
+  const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+Z$/,"Z");
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Masters Cove//EN","CALSCALE:GREGORIAN","X-WR-CALNAME:Masters Cove"];
+  ev.forEach((e,i)=>{ const d=parse(e.date); const n=new Date(d); n.setDate(n.getDate()+1);
+    lines.push("BEGIN:VEVENT",`UID:${e.go.join("-")}-${i}@masters-cove`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${iso(d).replace(/-/g,"")}`,`DTEND;VALUE=DATE:${iso(n).replace(/-/g,"")}`,
+      `SUMMARY:${icsEsc(e.kind+": "+e.label)}`,`DESCRIPTION:${icsEsc(e.sub)}`,"BEGIN:VALARM","TRIGGER:-P2D","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(e.label)}`,"END:VALARM","END:VEVENT"); });
+  lines.push("END:VCALENDAR");
+  download(`masters-cove-${firstName().toLowerCase()}-deadlines.ics`, lines.join("\r\n"), "text/calendar");
+  toast(`${ev.length} dates exported. Open the file to add them to your calendar.`);
+}
+function exportCsv(){
+  const cols=[["name","Program"],["school","University"],["country","Country"],["city","City"],["field","Field"],["tier","Tier"],["status","Status"],["intake","Intake"],["deadline","Deadline"],["decision","Decision date"],
+    ["currency","Currency"],["tuition","Tuition / yr"],["living","Living / yr"],["expFunding","Expected funding / yr"],["fee","Application fee"],["ielts","Min IELTS"],["gre","GRE/GMAT"],["gpa","Min GPA"],["stem","STEM designated"],
+    ["link","Program page"],["portal","Portal"],["cName","Admissions contact"],["cEmail","Contact email"],["cPhone","Contact phone"],["note","Notes"]];
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const rows=[cols.map(c=>q(c[1])).concat(q("Fit score"),q("Checklist %")).join(",")].concat(D.programs.map(p=>cols.map(c=>q(p[c[0]])).concat(q(fit(p)??""),q(checkPct(p))).join(",")));
+  download(`masters-cove-programs.csv`, "\ufeff"+rows.join("\r\n"), "text/csv");
+}
+
+/* ================= form engine ================= */
+const progOpts = () => [["","None"]].concat(D.programs.map(p=>[p.id,progName(p.id)]));
+const F = {
+  tasks:{title:"task",fields:[
+    {k:"title",l:"Task",req:1,wide:1},{k:"due",l:"Due date",t:"date"},{k:"cat",l:"Category",t:"select",o:CATS},{k:"prio",l:"Priority",t:"select",o:PRIOS},
+    {k:"prog",l:"For program",t:"select",o:progOpts},{k:"milestone",l:"Milestone (show on the timeline)",t:"check"},{k:"note",l:"Note",t:"textarea",wide:1}],
+    make:()=>({cat:"Research",prio:"Medium",done:false,created:Date.now()})},
+  gates:{title:"readiness gate",fields:[{k:"title",l:"Gate",req:1,wide:1},{k:"status",l:"Status",t:"select",o:GATE_ST},{k:"detail",l:"Detail"},{k:"blocks",l:"What it blocks",wide:1}],make:()=>({status:"Not started"})},
+  plan:{title:"phase",fields:[{k:"when",l:"When",req:1},{k:"title",l:"Focus",req:1},{k:"body",l:"What happens",t:"textarea",wide:1}],make:()=>({})},
+  programs:{title:"program",fields:[
+    {sec:"Program"},{k:"name",l:"Program",req:1},{k:"school",l:"University",req:1},{k:"country",l:"Country",t:"select",o:COUNTRIES},{k:"city",l:"City"},{k:"field",l:"Field"},
+    {k:"tier",l:"Tier",t:"select",o:TIERS},{k:"status",l:"Status",t:"select",o:STATUSES},{k:"intake",l:"Intake"},{k:"duration",l:"Duration"},
+    {sec:"Dates"},{k:"deadline",l:"Application deadline",t:"date"},{k:"decision",l:"Decision expected",t:"date"},
+    {sec:"Requirements"},{k:"ielts",l:"Minimum IELTS"},{k:"gre",l:"GRE / GMAT",t:"select",o:["Not checked","Required","Optional","Waived","Not accepted"]},{k:"gpa",l:"Minimum GPA / grade"},
+    {k:"stem",l:"STEM designated (US)",t:"select",o:[["unknown","Not checked"],["yes","Yes"],["no","No"]]},
+    {sec:"Costs"},{k:"currency",l:"Currency",t:"select",o:CURR},{k:"tuition",l:"Tuition per year",t:"number"},{k:"living",l:"Living costs per year",t:"number"},{k:"expFunding",l:"Expected funding per year",t:"number"},{k:"fee",l:"Application fee",t:"number"},{k:"scholar",l:"Scholarships offered",wide:1},
+    {sec:"Links & admissions contact"},{k:"link",l:"Program page",t:"url"},{k:"portal",l:"Application portal",t:"url"},{k:"cName",l:"Contact name / office"},{k:"cEmail",l:"Contact email",t:"email"},{k:"cPhone",l:"Contact phone",t:"tel"},
+    {k:"note",l:"Notes",t:"textarea",wide:1}],make:()=>normProg({})},
+  docs:{title:"document",fields:[{k:"title",l:"Document",req:1,wide:1},{k:"status",l:"Status",t:"select",o:Object.entries(DOC_ST)},{k:"due",l:"Needed by",t:"date"},{k:"expiry",l:"Expires on",t:"date"},
+    {k:"copies",l:"Copies needed",t:"number"},{k:"office",l:"Issuing office"},{k:"contact",l:"Office email / phone"},{k:"file",l:"Link to your copy (Drive etc.)",t:"url"},{k:"link",l:"Official page",t:"url"},{k:"note",l:"Note",t:"textarea",wide:1}],make:()=>normDoc({})},
+  tests:{title:"test",fields:[{k:"test",l:"Test",t:"select",o:["IELTS Academic","TOEFL iBT","PTE Academic","Duolingo English Test","GRE","GMAT","Other"]},{k:"target",l:"Target score"},{k:"date",l:"Test date",t:"date"},
+    {k:"score",l:"Score"},{k:"ref",l:"TRF / reference no."},{k:"valid",l:"Valid until",t:"date"},{k:"cost",l:"Cost (PKR)",t:"number"},{k:"note",l:"Note",t:"textarea",wide:1}],make:()=>({test:"IELTS Academic"})},
+  recs:{title:"recommender",fields:[{k:"name",l:"Name",req:1},{k:"role",l:"Title & institution"},{k:"email",l:"Email",t:"email"},{k:"phone",l:"Phone",t:"tel"},{k:"status",l:"Status",t:"select",o:REC_ST},
+    {k:"asked",l:"Asked on",t:"date"},{k:"progs",l:"Writing for (programs)",wide:1},{k:"note",l:"Note",t:"textarea",wide:1}],make:()=>({status:"Not asked"})},
+  contacts:{title:"contact",fields:[{k:"dept",l:"Department / office",req:1},{k:"org",l:"Organisation"},{k:"name",l:"Person"},{k:"email",l:"Email",t:"email"},{k:"phone",l:"Phone",t:"tel"},{k:"link",l:"Website",t:"url"},{k:"note",l:"Note",t:"textarea",wide:1}],make:()=>({})},
+  writing:{title:"writing piece",fields:[{k:"title",l:"Title",req:1,wide:1},{k:"prog",l:"For program",t:"select",o:progOpts},{k:"type",l:"Type",t:"select",o:["Statement of purpose","Personal statement","Essay","Writing sample","Research proposal","CV","Other"]},
+    {k:"status",l:"Status",t:"select",o:WR_ST},{k:"words",l:"Current words",t:"number"},{k:"limit",l:"Word limit",t:"number"},{k:"due",l:"Due",t:"date"},{k:"link",l:"Draft link",t:"url"},{k:"note",l:"Prompt / notes",t:"textarea",wide:1}],make:()=>({type:"Statement of purpose",status:"Idea"})},
+  funding:{title:"funding route",fields:[{k:"name",l:"Name",req:1,wide:1},{k:"type",l:"Type",t:"select",o:["Scholarship","Assistantship","University aid","Loan","Family","Other"]},{k:"status",l:"Status",t:"select",o:FUND_ST},
+    {k:"deadline",l:"Deadline",t:"date"},{k:"carries",l:"Can fund (country / programs)"},{k:"covers",l:"Covers"},{k:"currency",l:"Currency",t:"select",o:CURR},{k:"amount",l:"Amount per year",t:"number"},{k:"link",l:"Official page",t:"url"},{k:"note",l:"Note",t:"textarea",wide:1}],make:()=>({type:"Scholarship",status:"Researching",currency:"USD"})},
+  dims:{title:"dimension",fields:[{k:"name",l:"Dimension",req:1},{k:"weight",l:"Weight",t:"number"},{k:"desc",l:"What a 10 means",wide:1}],make:()=>({weight:10})},
+};
+let formCtx=null;
+function fieldHTML(f, v){
+  if (f.sec) return `<div class="sec">${esc(f.sec)}</div>`;
+  const id="f_"+f.k, w=f.wide?" wide":"", req=f.req?" required":"";
+  if (f.t==="check") return `<label class="ck${w}"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
+  let ctl;
+  if (f.t==="select"){ const opts=(typeof f.o==="function"?f.o():f.o).map(o=>Array.isArray(o)?o:[o,o]);
+    ctl=`<select id="${id}">${opts.map(([val,lab])=>`<option value="${esc(val)}" ${String(v??"")===String(val)?"selected":""}>${esc(lab)}</option>`).join("")}</select>`; }
+  else if (f.t==="textarea") ctl=`<textarea id="${id}" maxlength="1500"${req}>${esc(v)}</textarea>`;
+  else ctl=`<input id="${id}" type="${f.t||"text"}" value="${esc(v)}" maxlength="300"${req}${f.t==="number"?' step="any" min="0"':""}${f.t==="url"?' placeholder="https://"':""}>`;
+  return `<label class="${w.trim()}">${esc(f.l)}${f.req?" *":""}${ctl}</label>`;
+}
+function openForm(col, id){
+  const spec=F[col], cur=id?D[col].find(x=>x.id===id):null;
+  const vals=cur?{...cur}:spec.make();
+  $("#formTitle").textContent=(cur?"Edit ":"Add ")+spec.title;
+  $("#formBody").innerHTML=spec.fields.map(f=>fieldHTML(f,vals[f.k])).join("");
+  const del=$("#formDel"); del.hidden=!cur; del.textContent="Delete"; del.dataset.arm="";
+  formCtx={col,id,vals};
+  $("#formVeil").hidden=false;
+  setTimeout(()=>{ const first=$("#formBody input,#formBody select,#formBody textarea"); first&&first.focus(); },30);
+}
+$("#formEl").addEventListener("submit", e=>{
+  e.preventDefault(); if(!formCtx) return;
+  const {col,id,vals}=formCtx, spec=F[col];
+  for (const f of spec.fields){ if(f.sec) continue; const el=$("#f_"+f.k);
+    if (f.req && !el.value.trim()){ el.focus(); toast(`${f.l} is required`); return; }
+    if (f.t==="url" && el.value.trim() && !safeUrl(el.value.trim())){ el.focus(); toast(`${f.l} must start with https://`); return; }
+    vals[f.k] = f.t==="check" ? el.checked : f.t==="number" ? (el.value===""?"":+el.value) : el.value.trim(); }
+  if (id){ const i=D[col].findIndex(x=>x.id===id); D[col][i]=vals; } else { vals.id=uid(); D[col].push(vals); }
+  closeForm(); save(); toast(id?"Saved":"Added");
+  if (ui.drawer && col==="programs") openDrawer(ui.drawer);
+});
+function closeForm(){ $("#formVeil").hidden=true; formCtx=null; }
+$("#formCancel").onclick=closeForm;
+$("#formDel").onclick=()=>{
+  const b=$("#formDel"); if(!b.dataset.arm){ b.dataset.arm="1"; b.textContent="Click again to delete"; return; }
+  const {col,id}=formCtx; D[col]=D[col].filter(x=>x.id!==id);
+  if(col==="programs"){ ui.cmp.delete(id); D.tasks.forEach(t=>{ if(t.prog===id) t.prog=""; }); D.writing.forEach(w=>{ if(w.prog===id) w.prog=""; }); closeDrawer(); }
+  closeForm(); save(); toast("Deleted");
+};
+
+/* ================= views ================= */
+function buildTabs(){ $("#tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" type="button" data-view="${k}" aria-selected="${ui.view===k}">${l}</button>`).join(""); }
+function show(v){
+  if(!TABS.some(t=>t[0]===v)) v="home";
+  ui.view=v; LS.set("cove.view",v);
+  $$("section.view[data-view]").forEach(s=>s.hidden=s.dataset.view!==v);
+  $$("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===v));
+  window.scrollTo({top:0}); render();
+}
+
+function render(){
+  if(!D) return;
+  const name=me()?.name||"";
+  $("#brandName").textContent = name?`${firstName()}'s study desk`:"your study desk";
+  $("#menuWho").textContent = name?`Signed in as ${name}`:"";
+  document.title = name?`${firstName()}'s Masters Cove`:"Masters Cove";
+  ({home:rHome,plan:rPlan,programs:rPrograms,apps:rApps,docs:rDocs,writing:rWriting,funding:rFunding,scoring:rScoring,ambition:rAmbition,profile:rProfile})[ui.view]();
+}
 
 function taskRow(t){
   return `<li class="task ${t.done?"is-done":""}" data-id="${esc(t.id)}">
     <input type="checkbox" class="check" aria-label="Mark done: ${esc(t.title)}" ${t.done?"checked":""} data-act="toggle">
     <div style="min-width:0"><div class="tt">${esc(t.title)}</div>${t.note?`<div class="note">${esc(t.note)}</div>`:""}
-      <div class="meta">${dueChip(t)}<span class="chip cat">${esc(t.cat||"Admin")}</span>${t.milestone?`<span class="chip">Milestone</span>`:""}</div></div>
-    <button class="del" data-act="del-task" type="button">Delete</button></li>`;
+      <div class="meta">${dueChip(t.due,t.done)}${prioChip(t.prio)}<span class="chip cat">${esc(t.cat)}</span>${t.prog?`<span class="chip">${esc(progName(t.prog))}</span>`:""}${t.milestone?`<span class="chip">Milestone</span>`:""}</div></div>
+    <div class="acts"><button class="edit" type="button" data-edit="tasks">Edit</button></div></li>`;
 }
+const sortTasks = a => [...a].sort((x,y)=>(x.done-y.done)||(x.due||"9").localeCompare(y.due||"9")||(PRIOS.indexOf(x.prio)-PRIOS.indexOf(y.prio))||((x.created||0)-(y.created||0)));
 
-function render(){
-  const T=data.tasks, P=data.programs, D=data.docs, name=me()?.name||"";
-  $("#brandName").textContent = name ? `${firstName()}'s cove` : "masters cove";
-  $("#menuWho").textContent = name ? `Signed in as ${name}` : "";
-  document.title = name ? `${firstName()}'s Masters Cove` : "Masters Cove";
-  const now = new Date(), h = now.getHours();
-  $("#today").textContent = now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  $("#hello").textContent = `${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}${name?", "+name:""}`;
+/* ---------- dashboard ---------- */
+function rHome(){
+  const T=D.tasks, now=new Date(), h=now.getHours(), name=me()?.name||"";
+  $("#today").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  $("#hello").textContent=`${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}${name?", "+name:""}`;
+  const done=T.filter(t=>t.done).length;
+  $("#barFill").style.width=(T.length?Math.round(done/T.length*100):0)+"%";
+  $("#barTxt").textContent=`${done} / ${T.length} tasks done`;
+  $("#gateStrip").innerHTML=D.gates.filter(g=>g.status!=="Not needed").map(g=>`<span class="gchip ${g.status==="Done"?"done":g.status==="In progress"?"doing":"todo"}" title="${esc(g.detail)}">${g.status==="Done"?"✓ ":""}${esc(g.title)}</span>`).join("");
 
-  const done = T.filter(t=>t.done).length;
-  $("#barFill").style.width = (T.length?Math.round(done/T.length*100):0)+"%";
-  $("#barTxt").textContent = `${done} / ${T.length} done`;
+  const ms=sortTasks(T.filter(t=>t.milestone)), next=ms.find(t=>!t.done);
+  if(next){ const n=daysTo(next.due);
+    $("#countNum").innerHTML=n==null?"–":n<0?`${-n}<small>days late</small>`:n===0?"Today":`${n}<small>day${n===1?"":"s"}</small>`;
+    $("#countWhat").textContent=next.title; $("#countWhen").textContent=next.due?"Due "+fmt(next.due):""; }
+  else if(ms.length){ $("#countNum").textContent="✓"; $("#countWhat").textContent="Every milestone is done. So proud of you!"; $("#countWhen").textContent=""; }
+  else { $("#countNum").textContent="–"; $("#countWhat").textContent="No milestones yet"; $("#countWhen").textContent="Mark a task as a milestone in the planner."; }
 
-  const ms = sortTasks(T.filter(t=>t.milestone)), next = ms.find(t=>!t.done);
-  if (next){
-    const n = daysTo(next.due);
-    $("#countNum").innerHTML = n==null ? "–" : n<0 ? `${-n}<small>days late</small>` : n===0 ? "Today" : `${n}<small>day${n===1?"":"s"}</small>`;
-    $("#countWhat").textContent = next.title; $("#countWhen").textContent = next.due ? "Due "+fmt(next.due) : "";
-  } else if (ms.length){ $("#countNum").textContent="✓"; $("#countWhat").textContent="Every milestone is done. So proud of you!"; $("#countWhen").textContent=""; }
-  else { $("#countNum").textContent="–"; $("#countWhat").textContent="No milestones yet"; $("#countWhen").textContent="Add a task and mark it as a milestone."; }
+  // KPIs
+  const act=D.programs.filter(activeProg);
+  const nextDl=act.filter(p=>p.deadline&&daysTo(p.deadline)>=0&&!["Submitted","Under review","Accepted","Waitlisted"].includes(p.status)).sort((a,b)=>a.deadline.localeCompare(b.deadline))[0];
+  const g=D.gates.filter(x=>x.status!=="Not needed"), gd=g.filter(x=>x.status==="Done").length;
+  const subm=D.programs.filter(p=>["Submitted","Under review","Accepted","Waitlisted","Rejected"].includes(p.status)).length;
+  const strong=act.filter(p=>(fit(p)??0)>=70).length;
+  $("#kpis").innerHTML=[
+    ["programs","Next application deadline",nextDl?`${daysTo(nextDl.deadline)}<small style="font-size:16px"> days</small>`:"—",nextDl?`${nextDl.name} · ${fmt(nextDl.deadline)}`:"Add deadlines in each program's file"],
+    ["programs","Programs on the list",act.length,`${act.filter(p=>p.status!=="Researching").length} shortlisted or further · ${strong} strong fits (70+)`],
+    ["apps","Applications submitted",subm,`${D.programs.filter(p=>p.status==="Accepted").length} accepted so far`],
+    ["plan","Readiness",g.length?Math.round(gd/g.length*100)+"%":"—",`${gd} of ${g.length} gates cleared`],
+  ].map(([go,l,v,s])=>`<button class="kpi" type="button" data-go="${go}"><span class="l">${l}</span><span class="v">${v}</span><span class="s">${esc(s)}</span></button>`).join("");
 
-  $("#timeline").innerHTML = ms.length ? [...ms].sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(m=>
+  // radar
+  const ev=events().filter(e=>{ const n=daysTo(e.date); return n!=null && n<=30 && (n>=0 || e.kind==="Task" || e.kind==="Deadline" || e.kind==="Document" || e.kind==="Writing"); }).slice(0,12);
+  $("#radar").innerHTML=ev.length?ev.map(e=>{ const n=daysTo(e.date);
+    return `<li><span class="d tnum">${esc(fmt(e.date))}</span><span class="chip ${n<0?"late":n<=7?"soon":""}">${esc(e.kind)}</span><span class="t"><button class="link" style="text-decoration:none;font-weight:600;text-align:left" type="button" data-goto="${esc(e.go.join(":"))}">${esc(e.label)}</button><small>${esc(rel(n))}${e.sub?" · "+esc(e.sub):""}</small></span></li>`; }).join("")
+    :`<li class="empty">Nothing dated in the next 30 days.</li>`;
+
+  // upcoming tasks
+  const up=sortTasks(T.filter(t=>!t.done&&daysTo(t.due)!=null&&daysTo(t.due)<=14)).slice(0,7);
+  $("#upcoming").innerHTML=up.length?up.map(taskRow).join(""):`<li class="empty">${T.length?"Nothing due in the next two weeks. Breathe.":"No tasks yet. Add your first one in the planner."}</li>`;
+
+  // timeline
+  $("#timeline").innerHTML=ms.length?[...ms].sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(m=>
     `<div class="m ${m.done?"done":""} ${next&&m.id===next.id?"next":""}"><span class="dot"></span><div class="d tnum">${esc(fmt(m.due))}</div><div class="t">${esc(m.title)}</div></div>`).join("")
-    : `<div class="empty">Milestones will show here.</div>`;
+    :`<div class="empty">Milestones will show here.</div>`;
 
-  const up = sortTasks(T.filter(t=>!t.done && daysTo(t.due)!=null && daysTo(t.due)<=14)).slice(0,7);
-  $("#upcoming").innerHTML = up.length ? up.map(taskRow).join("") : `<li class="empty">${T.length?"Nothing due in the next two weeks. Breathe.":"No tasks yet. Add your first one in the planner."}</li>`;
+  // mini programs
+  const mini=[...act].sort((a,b)=>(a.deadline||"9").localeCompare(b.deadline||"9")).slice(0,5);
+  $("#miniProg").innerHTML=mini.length?`<ul class="radar">${mini.map(p=>`<li style="grid-template-columns:auto 1fr auto"><span class="flag">${flag(p.country)}</span><span class="t"><button class="link" style="text-decoration:none;font-weight:700;text-align:left" type="button" data-open="${esc(p.id)}">${esc(p.name)}</button><small>${esc(p.school)} · ${esc(p.status)}</small></span><span class="chip ${daysTo(p.deadline)!=null&&daysTo(p.deadline)<=30?"soon":""} tnum">${p.deadline?esc(fmt(p.deadline)):"Deadline?"}</span></li>`).join("")}</ul>`
+    :`<p class="empty">No programs yet.</p>`;
 
-  const act = P.filter(p=>p.status!=="Dropped");
-  $("#progSum").innerHTML = [["USA",act.filter(p=>p.country==="USA").length],["Germany",act.filter(p=>p.country==="Germany").length],["Shortlisted",act.filter(p=>["Shortlisted","Applying","Submitted"].includes(p.status)).length]]
-    .map(([l,n])=>`<div class="pill-stat"><b class="tnum">${n}</b><span>${l}</span></div>`).join("");
-  const mini = [...act].sort((a,b)=>(a.deadline||"9").localeCompare(b.deadline||"9")).slice(0,5);
-  $("#miniProg").innerHTML = mini.length ? mini.map(p=>{ const n=daysTo(p.deadline);
-    return `<div class="mp"><span class="flag">${flag(p.country)}</span><div style="min-width:0"><div class="n">${esc(p.name)}</div><div class="s">${esc(p.school||"")} · ${esc(p.status)}</div></div>
-      <span class="chip ${n!=null&&n<=30?"soon":""} tnum">${p.deadline?esc(fmt(p.deadline)):"Deadline?"}</span></div>`; }).join("")
-    : `<div class="empty">No programs yet. Add the first one on the Programs tab.</div>`;
+  // balance
+  const tc=t=>act.filter(p=>p.tier===t).length;
+  let msg;
+  if(act.length<3) msg=`<p class="note-warn">Add at least 3–5 programs to judge the balance.</p>`;
+  else if(tc("Unrated")>act.length/2) msg=`<p class="note-warn">Most programs are unrated. Set a tier in each program's file.</p>`;
+  else if(!tc("Likely")) msg=`<p class="note-warn">No likely option yet. Add one or two programs your profile clears comfortably.</p>`;
+  else if(tc("Reach")>act.length/2) msg=`<p class="note-warn">More than half are reaches. Add some targets.</p>`;
+  else msg=`<p class="note-ok">A healthy mix of reach, target and likely options.</p>`;
+  $("#balance").innerHTML=`<div class="row">${TIERS.map(t=>`<span class="tier tier-${t}">${tc(t)} ${t}</span>`).join("")}</div>${msg}`;
 
-  const dd = [...D].sort((a,b)=>(a.order||0)-(b.order||0));
-  $("#docBar").innerHTML = dd.map(d=>`<i class="${esc(d.status)}" title="${esc(d.title)}"></i>`).join("");
-  $("#docCount").textContent = D.length ? `${D.filter(d=>d.status==="done").length} of ${D.length} ready · ${D.filter(d=>d.status==="doing").length} in progress` : "";
+  // budget
+  const by={}; const add=(c,k,v)=>{ if(!v) return; by[c]=by[c]||{fee:0,gap:0,n:0}; by[c][k]+=v; };
+  act.forEach(p=>{ add(p.currency,"fee",num(p.fee)); const gap=num(p.tuition)+num(p.living)-num(p.expFunding); if(num(p.tuition)||num(p.living)) add(p.currency,"gap",Math.max(0,gap)); });
+  const testCost=D.tests.reduce((s,x)=>s+num(x.cost),0);
+  const rows=Object.entries(by).flatMap(([c,o])=>[o.fee?`<div><span>Application fees (${c})</span><b>${money(o.fee,c)}</b></div>`:"",o.gap?`<div><span>Funding gap, all programs (${c})</span><b>${money(o.gap,c)}</b></div>`:""]).join("");
+  $("#budget").innerHTML=(rows+(testCost?`<div><span>Test fees</span><b>${money(testCost,"PKR")}</b></div>`:""))||`<p class="empty">Add application fees, tuition and test costs to see your budget.</p>`;
 
-  renderPlanner(); renderPrograms(); renderDocs();
+  // docs
+  const dd=[...D.docs].sort((a,b)=>(a.order||0)-(b.order||0));
+  $("#docBar").innerHTML=dd.map(d=>`<i class="${esc(d.status)}" title="${esc(d.title)}"></i>`).join("");
+  $("#docCount").textContent=D.docs.length?`${D.docs.filter(d=>d.status==="done").length} of ${D.docs.length} ready · ${D.docs.filter(d=>d.status==="doing").length} in progress`:"";
+  runSearch();
 }
 
-function renderPlanner(){
-  $("#catFilters").innerHTML = ["All",...CATS].map(c=>`<button type="button" aria-pressed="${ui.cat===c}" data-cat="${c}">${c}</button>`).join("");
-  const list = sortTasks(data.tasks.filter(t=>ui.cat==="All"||t.cat===ui.cat));
-  const monthEnd = (()=>{ const d=today0(); return new Date(d.getFullYear(), d.getMonth()+1, 1); })();
-  const groups = [
-    ["Overdue", t=>!t.done && daysTo(t.due)<0],
-    ["This week", t=>!t.done && daysTo(t.due)>=0 && daysTo(t.due)<=7],
-    ["Later this month", t=>!t.done && daysTo(t.due)>7 && parse(t.due)<monthEnd],
-    ["Coming months", t=>!t.done && (t.due==null||t.due==="" || (daysTo(t.due)>7 && parse(t.due)>=monthEnd))],
-    ["Done", t=>t.done],
-  ];
-  const html = groups.map(([n,fn])=>{ const it=list.filter(fn); return it.length ? `<div class="panel phase"><h3>${n}<span class="chip tnum">${it.length}</span></h3><ul class="tasks">${it.map(taskRow).join("")}</ul></div>` : ""; }).join("");
-  $("#phases").innerHTML = html || `<div class="panel"><div class="empty">No tasks here yet. Use “Add a task” above.</div></div>`;
+/* ---------- global search ---------- */
+function runSearch(){
+  const q=($("#gSearch").value||"").trim().toLowerCase(), out=$("#gResults");
+  if(q.length<2){ out.innerHTML=""; return; }
+  const hit=(...v)=>v.some(x=>String(x||"").toLowerCase().includes(q));
+  const res=[];
+  D.tasks.forEach(t=>hit(t.title,t.note)&&res.push(["Task",t.title,"task:"+t.id]));
+  D.programs.forEach(p=>hit(p.name,p.school,p.city,p.field,p.note,p.cName,p.cEmail)&&res.push(["Program",`${p.name} · ${p.school}`,"prog:"+p.id]));
+  D.docs.forEach(d=>hit(d.title,d.note,d.office)&&res.push(["Document",d.title,"docs:"+d.id]));
+  D.contacts.forEach(c=>hit(c.dept,c.org,c.name,c.email,c.phone)&&res.push(["Contact",`${c.dept}${c.org?" · "+c.org:""}`,"contacts:"+c.id]));
+  D.recs.forEach(r=>hit(r.name,r.role,r.email,r.progs)&&res.push(["Recommender",r.name,"recs:"+r.id]));
+  D.writing.forEach(w=>hit(w.title,w.note,w.type)&&res.push(["Writing",w.title,"writing:"+w.id]));
+  D.funding.forEach(f=>hit(f.name,f.note,f.carries)&&res.push(["Funding",f.name,"funding:"+f.id]));
+  D.tests.forEach(x=>hit(x.test,x.ref,x.note)&&res.push(["Test",x.test,"tests:"+x.id]));
+  RESOURCES.forEach(([g,list])=>list.forEach(([n,u,dsc])=>hit(n,dsc,g)&&res.push(["Official link",n,"url:"+u])));
+  out.innerHTML=res.length?res.slice(0,30).map(([k,l,go])=>`<button type="button" data-goto="${esc(go)}"><span class="chip">${esc(k)}</span><span>${esc(l)}</span></button>`).join(""):`<p class="empty">No matches.</p>`;
+}
+$("#gSearch").addEventListener("input",runSearch);
+function goto(spec){
+  const [k,...rest]=spec.split(":"); const id=rest.join(":");
+  if(k==="url"){ window.open(id,"_blank","noopener"); return; }
+  if(k==="prog"){ openDrawer(id); return; }
+  const tab={task:"plan",docs:"docs",contacts:"docs",recs:"docs",tests:"docs",writing:"writing",funding:"funding"}[k];
+  const col={task:"tasks"}[k]||k;
+  show(tab); setTimeout(()=>openForm(col,id),50);
 }
 
-function renderPrograms(){
-  $("#countryFilters").innerHTML = ["All","USA","Germany","Other"].map(c=>`<button type="button" aria-pressed="${ui.country===c}" data-country="${c}">${c}</button>`).join("");
-  const list = data.programs.filter(p=>ui.country==="All"||p.country===ui.country)
-    .sort((a,b)=>(a.status==="Dropped")-(b.status==="Dropped") || (a.deadline||"9").localeCompare(b.deadline||"9"));
-  $("#programs").innerHTML = list.length ? list.map(p=>{
-    const stem = p.stem==="yes"?`<span class="chip ok">STEM</span>`:p.stem==="no"?`<span class="chip late">Not STEM</span>`:(p.country==="USA"?`<span class="chip soon">STEM: check</span>`:"");
-    const link = /^https?:\/\//.test(p.link||"") ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Program page ↗</a>` : "";
-    return `<article class="pcard" data-id="${esc(p.id)}">
-      <div class="row"><span class="flag">${flag(p.country)}</span>${stem}
-        <select aria-label="Status for ${esc(p.name)}" data-act="status" style="margin-left:auto">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></div>
-      <h3>${esc(p.name)}</h3><div class="school">${esc(p.school||"")}</div>
-      <dl><dt>Deadline</dt><dd class="tnum">${p.deadline?`${esc(fmt(p.deadline))} (${rel(daysTo(p.deadline))})`:"Not found yet"}</dd>
-        <dt>Tests</dt><dd>${esc(p.tests||"To check")}</dd>${p.note?`<dt>Notes</dt><dd>${esc(p.note)}</dd>`:""}</dl>
-      <div class="row">${link}<button class="del" data-act="del-prog" type="button" style="margin-left:auto">Delete</button></div></article>`;
-  }).join("") : `<div class="panel"><div class="empty">No programs here yet. Use “Add a program” above.</div></div>`;
+/* ---------- planner ---------- */
+function rPlan(){
+  $("#catFilters").innerHTML=["All",...CATS].map(c=>`<button type="button" aria-pressed="${ui.cat===c}" data-cat="${c}">${c}</button>`).join("");
+  const q=ui.tq.toLowerCase();
+  const list=sortTasks(D.tasks.filter(t=>(ui.cat==="All"||t.cat===ui.cat)&&(ui.prio==="All"||t.prio===ui.prio)&&(!q||(t.title+" "+t.note).toLowerCase().includes(q))));
+  const t0=today0(), monthEnd=new Date(t0.getFullYear(),t0.getMonth()+1,1);
+  const groups=[["Overdue",t=>!t.done&&daysTo(t.due)<0],["This week",t=>!t.done&&daysTo(t.due)>=0&&daysTo(t.due)<=7],
+    ["Later this month",t=>!t.done&&daysTo(t.due)>7&&parse(t.due)<monthEnd],["Coming months",t=>!t.done&&(!t.due||(daysTo(t.due)>7&&parse(t.due)>=monthEnd))],["Done",t=>t.done]];
+  const html=groups.map(([n,fn])=>{ const it=list.filter(fn); return it.length?`<div class="panel phase"><h3>${n}<span class="chip tnum">${it.length}</span></h3><ul class="tasks">${it.map(taskRow).join("")}</ul></div>`:""; }).join("");
+  $("#phases").innerHTML=html||`<div class="panel"><p class="empty">No tasks match. Use “Add task” above.</p></div>`;
+  const g=D.gates.filter(x=>x.status!=="Not needed");
+  $("#gateCount").textContent=g.length?`${g.filter(x=>x.status==="Done").length} of ${g.length} cleared`:"";
+  $("#gates").innerHTML=D.gates.length?D.gates.map(x=>`<tr data-id="${esc(x.id)}"><td class="name">${esc(x.title)}</td>
+    <td><select data-act="gate" aria-label="Status for ${esc(x.title)}">${GATE_ST.map(s=>`<option ${s===x.status?"selected":""}>${s}</option>`).join("")}</select></td>
+    <td>${esc(x.detail)}</td><td class="sub">${esc(x.blocks)}</td><td><button class="edit" type="button" data-edit="gates">Edit</button></td></tr>`).join("")
+    :`<tr><td colspan="5" class="empty">No gates yet. Add the things that block your applications, like a test score or attestation.</td></tr>`;
+  $("#planList").innerHTML=D.plan.length?D.plan.map(p=>`<div class="row" data-id="${esc(p.id)}"><div class="when">${esc(p.when)}</div><div><div class="h">${esc(p.title)}</div><p>${esc(p.body)}</p></div><div><button class="edit" type="button" data-edit="plan">Edit</button></div></div>`).join("")
+    :`<p class="empty">No phases yet. Break the year into 4–6 phases.</p>`;
 }
+$("#tSearch").addEventListener("input",e=>{ ui.tq=e.target.value; rPlan(); });
+$("#tPrio").addEventListener("change",e=>{ ui.prio=e.target.value; rPlan(); });
 
-function renderDocs(){
-  const lab = {todo:"Not started",doing:"In progress",done:"Ready"};
-  const dd = [...data.docs].sort((a,b)=>(a.order||0)-(b.order||0));
-  $("#docs").innerHTML = dd.length ? dd.map(d=>`<li data-id="${esc(d.id)}"><span class="dn">${esc(d.title)}</span>
-      <button class="state ${esc(d.status)}" data-act="cycle" type="button">${lab[d.status]||"Not started"}</button>
-      <button class="del" data-act="del-doc" type="button" aria-label="Delete ${esc(d.title)}">✕</button>
-      ${d.note?`<span class="dnote">${esc(d.note)}</span>`:""}</li>`).join("") : `<li class="empty">No documents yet. Add one below.</li>`;
+/* ---------- programs ---------- */
+function filteredProgs(){
+  const q=ui.pq.toLowerCase();
+  let l=D.programs.filter(p=>(ui.pc==="All"||p.country===ui.pc)&&(ui.pt==="All"||p.tier===ui.pt)&&
+    (ui.ps==="All"||(ui.ps==="Active"?activeProg(p):p.status===ui.ps))&&(!q||[p.name,p.school,p.city,p.field,p.note].join(" ").toLowerCase().includes(q)));
+  const s=ui.sort;
+  l.sort((a,b)=>s==="fit"?((fit(b)??-1)-(fit(a)??-1)):s==="name"?a.name.localeCompare(b.name):s==="cost"?(num(a.tuition)||1e12)-(num(b.tuition)||1e12):(a.deadline||"9").localeCompare(b.deadline||"9"));
+  return l;
 }
-
-/* ---------- interactions ---------- */
-const idOf = el => el.closest("[data-id]").dataset.id;
-document.addEventListener("click", e => {
-  const c = e.target.closest("[data-cat]"); if (c){ ui.cat=c.dataset.cat; renderPlanner(); return; }
-  const k = e.target.closest("[data-country]"); if (k){ ui.country=k.dataset.country; renderPrograms(); return; }
-  const btn = e.target.closest("[data-act]"); if (!btn || btn.tagName==="INPUT" || btn.tagName==="SELECT") return;
-  const a = btn.dataset.act;
-  if (a.startsWith("del-")){
-    if (!btn.classList.contains("arm")){ const t=btn.textContent; btn.classList.add("arm"); btn.textContent="Sure?"; setTimeout(()=>{btn.classList.remove("arm"); btn.textContent=t;},3000); return; }
-    const col = {"del-task":"tasks","del-prog":"programs","del-doc":"docs"}[a], id = idOf(btn);
-    data[col] = data[col].filter(x=>x.id!==id); save();
+function rPrograms(){
+  const sel=(id,opts,val)=>{ $(id).innerHTML=opts.map(([v,l])=>`<option value="${esc(v)}" ${v===val?"selected":""}>${esc(l)}</option>`).join(""); };
+  sel("#pCountryF",[["All","All countries"],...COUNTRIES.map(c=>[c,c])],ui.pc);
+  sel("#pTierF",[["All","All tiers"],...TIERS.map(c=>[c,c])],ui.pt);
+  sel("#pStatusF",[["Active","Active (not dropped or rejected)"],["All","All statuses"],...STATUSES.map(c=>[c,c])],ui.ps);
+  $("#pSort").value=ui.sort;
+  $$("#pView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.pv===ui.pv));
+  const l=filteredProgs(), out=$("#progOut");
+  renderCmpBar();
+  if(!D.programs.length){ out.innerHTML=`<div class="panel"><p class="empty">No programs yet. Use “Add program” to start your list.</p></div>`; return; }
+  if(!l.length){ out.innerHTML=`<div class="panel"><p class="empty">No programs match these filters.</p></div>`; return; }
+  if(ui.pv==="table"){
+    out.innerHTML=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th><span class="sr">Compare</span></th><th>Program</th><th>Tier</th><th>Fit</th><th>Deadline</th><th>Tuition / yr</th><th>IELTS</th><th>GRE/GMAT</th><th>Status</th></tr></thead><tbody>${
+      l.map(p=>`<tr data-id="${esc(p.id)}"><td><input type="checkbox" data-act="cmp" aria-label="Compare ${esc(p.name)}" ${ui.cmp.has(p.id)?"checked":""}></td>
+      <td><button class="link" style="text-decoration:none;text-align:left" type="button" data-open="${esc(p.id)}"><span class="name">${esc(p.name)}</span></button><div class="sub">${esc(p.school)} · ${esc(p.city||p.country)}</div></td>
+      <td><span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span></td><td class="num">${fit(p)??"—"}</td>
+      <td class="tnum">${p.deadline?`${esc(fmtY(p.deadline))}<div class="sub">${rel(daysTo(p.deadline))}</div>`:"—"}</td>
+      <td class="num">${money(p.tuition,p.currency)}</td><td>${esc(p.ielts||"—")}</td><td>${esc(p.gre)}</td>
+      <td><select data-act="pstatus" aria-label="Status for ${esc(p.name)}">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`;
+  } else if(ui.pv==="map"){
+    const fields=[...new Set(l.map(p=>p.field||"Unsorted"))], cs=[...new Set(l.map(p=>p.country))];
+    out.innerHTML=`<div class="tbl-wrap"><table class="tbl cmap"><thead><tr><th>Field</th>${cs.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${
+      fields.map(f=>`<tr><td class="lab">${esc(f)}</td>${cs.map(c=>`<td>${l.filter(p=>(p.field||"Unsorted")===f&&p.country===c).map(p=>`<button type="button" class="mchip ${esc(p.tier)}" data-open="${esc(p.id)}">${esc(p.name)}<small>${esc(p.school)} · ${fit(p)!=null?"fit "+fit(p):esc(p.tier)}</small></button>`).join("")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">Rows are fields, columns are countries, and the left edge colour is the tier.</p>`;
+  } else if(ui.pv==="timeline"){
+    const months={}, nod=[];
+    l.forEach(p=>{ const d=parse(p.deadline); if(!d){ nod.push(p); return; } const k=p.deadline.slice(0,7); (months[k]=months[k]||{label:d.toLocaleDateString(undefined,{month:"long",year:"numeric"}),rows:[]}).rows.push(p); });
+    const item=p=>`<button type="button" class="it" data-open="${esc(p.id)}"><span class="tnum" style="font-weight:800">${p.deadline?esc(fmt(p.deadline)):"—"}</span><span>${esc(p.name)} <span class="muted">· ${esc(p.school)}</span></span><span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span></button>`;
+    out.innerHTML=`<div class="tlm">${Object.keys(months).sort().map(k=>`<section><h3>${esc(months[k].label)}</h3><div class="items">${months[k].rows.map(item).join("")}</div></section>`).join("")}${nod.length?`<section><h3>No deadline yet</h3><div class="items">${nod.map(item).join("")}</div></section>`:""}</div>`;
+  } else {
+    out.innerHTML=`<div class="programs">${l.map(p=>{ const f=fit(p);
+      const stem=p.country==="USA"?(p.stem==="yes"?`<span class="chip ok">STEM</span>`:p.stem==="no"?`<span class="chip late">Not STEM</span>`:`<span class="chip soon">STEM: check</span>`):"";
+      return `<article class="pcard" data-id="${esc(p.id)}">
+        <div class="row"><span class="flag">${flag(p.country)}</span><span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span>${stem}
+          <label class="cmpbox" style="margin-left:auto"><input type="checkbox" data-act="cmp" ${ui.cmp.has(p.id)?"checked":""}> Compare</label></div>
+        <div class="row" style="align-items:flex-end;justify-content:space-between;flex-wrap:nowrap;gap:12px"><h3 style="min-width:0">${esc(p.name)}</h3><span class="fit tnum" title="Fit score">${f??"—"}<small>fit</small></span></div>
+        <div class="school">${esc(p.school)}${p.city?" · "+esc(p.city):""}</div>
+        <dl><dt>Deadline</dt><dd class="tnum">${p.deadline?`${esc(fmtY(p.deadline))} (${rel(daysTo(p.deadline))})`:"Not found yet"}</dd>
+          <dt>Tuition</dt><dd>${p.tuition!==""?money(p.tuition,p.currency)+" / yr":"To check"}</dd>
+          <dt>IELTS</dt><dd>${esc(p.ielts||"To check")}</dd><dt>Contact</dt><dd>${p.cEmail?esc(p.cEmail):"Not added"}</dd></dl>
+        <div class="row"><select data-act="pstatus" aria-label="Status for ${esc(p.name)}">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select>
+          <button class="btn sm" type="button" data-open="${esc(p.id)}" style="margin-left:auto">Open file</button></div>
+      </article>`; }).join("")}</div>`;
   }
-  if (a==="cycle"){ const d = data.docs.find(x=>x.id===idOf(btn)); if(d){ d.status = {todo:"doing",doing:"done",done:"todo"}[d.status]||"doing"; save(); } }
-});
-document.addEventListener("change", e => {
-  const el = e.target;
-  if (el.dataset.act==="toggle"){ const t=data.tasks.find(x=>x.id===idOf(el)); if(t){ t.done=el.checked; save(); } }
-  if (el.dataset.act==="status"){ const p=data.programs.find(x=>x.id===idOf(el)); if(p){ p.status=el.value; save(); } }
-});
-
-$("#tCat").innerHTML = CATS.map(c=>`<option>${c}</option>`).join("");
-$("#pStatus").innerHTML = STATUSES.map(c=>`<option ${c==="Researching"?"selected":""}>${c}</option>`).join("");
-$("#taskForm").addEventListener("submit", e => { e.preventDefault();
-  data.tasks.push({id:uid(), title:$("#tTitle").value.trim(), due:$("#tDue").value, cat:$("#tCat").value, milestone:$("#tMile").value==="yes", note:$("#tNote").value.trim(), done:false, created:Date.now()});
-  e.target.reset(); save(); });
-$("#progForm").addEventListener("submit", e => { e.preventDefault();
-  data.programs.push({id:uid(), name:$("#pName").value.trim(), school:$("#pSchool").value.trim(), country:$("#pCountry").value, status:$("#pStatus").value,
-    deadline:$("#pDeadline").value, stem:$("#pStem").value, tests:$("#pTests").value.trim(), link:$("#pLink").value.trim(), note:$("#pNote").value.trim(), created:Date.now()});
-  e.target.reset(); save(); });
-$("#docForm").addEventListener("submit", e => { e.preventDefault();
-  data.docs.push({id:uid(), title:$("#dTitle").value.trim(), note:$("#dNote").value.trim(), status:"todo", order:Date.now()});
-  e.target.reset(); save(); });
-
-/* ---------- profile menu ---------- */
-const menu = $("#profileMenu");
-$("#profileBtn").onclick = () => { menu.hidden = !menu.hidden; $("#profileBtn").setAttribute("aria-expanded", !menu.hidden); };
-document.addEventListener("click", e => { if (!e.target.closest(".menu-wrap")) { menu.hidden = true; $("#profileBtn").setAttribute("aria-expanded", false); } });
-$("#mSwitch").onclick = () => { menu.hidden = true; openPicker(); };
-$("#mExport").onclick = () => {
-  menu.hidden = true;
-  const blob = new Blob([JSON.stringify({app:"masters-cove", version:1, profile:me(), data}, null, 2)], {type:"application/json"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = `masters-cove-${firstName().toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-};
-$("#importFile").onchange = async e => {
-  menu.hidden = true; const f = e.target.files[0]; if (!f) return;
-  try {
-    const j = JSON.parse(await f.text());
-    if (j.app!=="masters-cove" || !j.data) throw 0;
-    data = Object.assign(blank(), {tasks:j.data.tasks||[], programs:j.data.programs||[], docs:j.data.docs||[]});
-    save(); note(`Restored the plan from ${f.name}.`);
-  } catch { note("That file isn't a Masters Cove backup. Choose a .json file downloaded from this app."); }
-  e.target.value = "";
-};
-$("#mDelete").onclick = () => { menu.hidden = true; $("#cdName").textContent = me()?.name || "this profile"; $("#confirmDel").hidden = false; $("#cdNo").focus(); };
-$("#cdNo").onclick = () => $("#confirmDel").hidden = true;
-$("#cdYes").onclick = () => {
-  LS.del("cove.data."+active); profiles = profiles.filter(p=>p.id!==active); LS.set("cove.profiles", profiles);
-  active = null; LS.del("cove.active"); data = blank(); $("#confirmDel").hidden = true; render(); openPicker();
-};
-
-function openPicker(){
-  $("#pkList").innerHTML = profiles.map(p=>`<button type="button" data-pid="${esc(p.id)}">${esc(p.name)}<span aria-hidden="true">→</span></button>`).join("");
-  $("#pkHelp").textContent = profiles.length ? "Pick your profile, or make a new one. Each plan is saved only in this browser." : "Make your profile to start. Your plan is saved only in this browser, so nobody else sees it.";
-  $("#picker").hidden = false;
 }
-$("#pkList").addEventListener("click", e => { const b = e.target.closest("[data-pid]"); if (!b) return; $("#picker").hidden = true; loadProfile(b.dataset.pid); openQuote(); });
-$("#newProfile").addEventListener("submit", e => {
-  e.preventDefault();
-  const p = {id:uid(), name:$("#npName").value.trim()}; if (!p.name) return;
-  profiles.push(p); LS.set("cove.profiles", profiles);
-  LS.set("cove.data."+p.id, $("#npTemplate").value==="starter" ? starter() : blank());
-  e.target.reset(); $("#picker").hidden = true; loadProfile(p.id); openQuote();
+function renderCmpBar(){
+  const n=ui.cmp.size, b=$("#cmpBar"); b.hidden=!n;
+  if(n) b.innerHTML=`<span>${n} selected to compare</span><button class="btn sm" type="button" id="cmpOpen" ${n<2?"disabled":""}>Compare side by side</button><button class="link" type="button" id="cmpReset">Clear</button>`;
+}
+function openCompare(){
+  const ps=D.programs.filter(p=>ui.cmp.has(p.id)); if(ps.length<2) return;
+  const rows=[["University",p=>p.school],["Country / city",p=>[p.country,p.city].filter(Boolean).join(" · ")],["Field",p=>p.field],["Tier",p=>p.tier],["Fit score",p=>fit(p)??"—"],["Status",p=>p.status],
+    ["Intake",p=>p.intake],["Duration",p=>p.duration],["Deadline",p=>p.deadline?fmtY(p.deadline):"—"],["Tuition / yr",p=>money(p.tuition,p.currency)],["Living / yr",p=>money(p.living,p.currency)],
+    ["Expected funding / yr",p=>money(p.expFunding,p.currency)],["Gap / yr",p=>(p.tuition!==""||p.living!=="")?money(num(p.tuition)+num(p.living)-num(p.expFunding),p.currency):"—"],["Application fee",p=>money(p.fee,p.currency)],
+    ["Min IELTS",p=>p.ielts],["GRE / GMAT",p=>p.gre],["Min GPA",p=>p.gpa],["STEM (US)",p=>({yes:"Yes",no:"No",unknown:"Not checked"})[p.stem]],["Scholarships",p=>p.scholar],["Checklist",p=>checkPct(p)+"%"],
+    ...D.dims.map(d=>[d.name,p=>p.ratings?.[d.id]??"—"])];
+  $("#cmpOut").innerHTML=`<table class="tbl" style="min-width:${200+ps.length*200}px"><thead><tr><th></th>${ps.map(p=>`<th style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(([l,fn])=>`<tr><td class="sub" style="font-weight:700">${esc(l)}</td>${ps.map(p=>`<td>${esc(fn(p)||"—")}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  $("#cmpVeil").hidden=false;
+}
+$("#cmpClose").onclick=()=>$("#cmpVeil").hidden=true;
+$("#cmpClear").onclick=()=>{ ui.cmp.clear(); $("#cmpVeil").hidden=true; render(); };
+$("#pSearch").addEventListener("input",e=>{ ui.pq=e.target.value; rPrograms(); });
+["#pCountryF","#pTierF","#pStatusF","#pSort"].forEach((id,i)=>$(id).addEventListener("change",e=>{ ui[["pc","pt","ps","sort"][i]]=e.target.value; rPrograms(); }));
+
+/* ---------- program drawer ---------- */
+function openDrawer(id){
+  const p=D.programs.find(x=>x.id===id); if(!p) return;
+  ui.drawer=id;
+  $("#dwEyebrow").innerHTML=`<span class="flag">${flag(p.country)}</span> <span class="tier tier-${esc(p.tier)}">${esc(p.tier)}</span> ${esc(p.status)}`;
+  $("#dwTitle").textContent=p.name; $("#dwSchool").textContent=[p.school,p.city,p.country].filter(Boolean).join(" · ");
+  const kv=rows=>`<dl class="kv">${rows.filter(r=>r[1]!==undefined).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v||"—"}</dd>`).join("")}</dl>`;
+  const link=(u,l)=>safeUrl(u)?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`:"—";
+  const gap=num(p.tuition)+num(p.living)-num(p.expFunding);
+  const f=fit(p);
+  $("#dwBody").innerHTML=`
+    <div class="toolbar"><button class="btn sm" type="button" data-edit-prog="${esc(p.id)}">Edit details</button>
+      <select data-act="dstatus" aria-label="Status">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select>
+      <label class="cmpbox"><input type="checkbox" data-act="dcmp" ${ui.cmp.has(p.id)?"checked":""}> Compare</label></div>
+    <div class="dw-sec"><h4>Key dates</h4>${kv([["Intake",esc(p.intake)],["Duration",esc(p.duration)],["Application deadline",p.deadline?`${esc(fmtY(p.deadline))} · ${rel(daysTo(p.deadline))}`:""],["Decision expected",p.decision?esc(fmtY(p.decision)):""]])}</div>
+    <div class="dw-sec"><h4>Requirements</h4>${kv([["Minimum IELTS",esc(p.ielts)],["GRE / GMAT",esc(p.gre)],["Minimum GPA",esc(p.gpa)],["STEM designated",p.country==="USA"?({yes:"Yes",no:"No",unknown:"Not checked yet"})[p.stem]:undefined],["Field",esc(p.field)]])}</div>
+    <div class="dw-sec"><h4>Costs (${esc(p.currency)})</h4>${kv([["Tuition / yr",money(p.tuition,p.currency)],["Living / yr",money(p.living,p.currency)],["Expected funding / yr",money(p.expFunding,p.currency)],
+      ["Gap / yr",(p.tuition!==""||p.living!=="")?`<b class="${gap>0?"gap-pos":"gap-zero"}">${money(Math.max(0,gap),p.currency)}</b>`:""],["Application fee",money(p.fee,p.currency)],["Scholarships",esc(p.scholar)]])}</div>
+    <div class="dw-sec"><h4>Admissions contact &amp; links</h4>${kv([["Office / person",esc(p.cName)],
+      ["Email",p.cEmail?`${esc(p.cEmail)} <button class="copy" type="button" data-copy="${esc(p.cEmail)}">Copy</button>`:""],
+      ["Phone",p.cPhone?`${esc(p.cPhone)} <button class="copy" type="button" data-copy="${esc(p.cPhone)}">Copy</button>`:""],
+      ["Program page",link(p.link,"Open")],["Application portal",link(p.portal,"Open portal")]])}</div>
+    <div class="dw-sec"><h4>Application checklist · <span id="dwPct">${checkPct(p)}</span>%</h4><div class="cklist">${CHECK.map((c,i)=>`<label><input type="checkbox" data-act="pcheck" data-i="${i}" ${p.check?.[i]?"checked":""}> ${esc(c)}</label>`).join("")}</div></div>
+    <div class="dw-sec"><h4>Fit score · <span id="dwFit">${f??"not rated"}</span></h4><p class="muted" style="margin:0;font-size:13px">Rate 0–10 on each dimension. Change the dimensions and weights in Scoring.</p>
+      <div class="rates">${D.dims.map(d=>`<label class="r"><span>${esc(d.name)} <span class="muted" style="font-size:12px">· weight ${esc(d.weight)}</span></span><input type="number" min="0" max="10" step="0.5" data-act="rate" data-dim="${esc(d.id)}" value="${esc(p.ratings?.[d.id]??"")}" aria-label="${esc(d.name)} rating"></label>`).join("")}</div></div>
+    <div class="dw-sec"><h4>Linked work</h4>${(()=>{ const t=D.tasks.filter(x=>x.prog===p.id), w=D.writing.filter(x=>x.prog===p.id);
+      return (t.length||w.length)?`<ul class="tasks">${t.map(x=>`<li class="task" style="grid-template-columns:1fr auto"><span>${esc(x.title)}</span>${dueChip(x.due,x.done)}</li>`).join("")}${w.map(x=>`<li class="task" style="grid-template-columns:1fr auto"><span>${esc(x.title)}</span><span class="chip">${esc(x.status)}</span></li>`).join("")}</ul>`:`<p class="empty">No tasks or writing linked yet. Pick this program in a task's “For program” field.</p>`; })()}</div>
+    ${p.note?`<div class="dw-sec"><h4>Notes</h4><p style="margin:0;white-space:pre-wrap">${esc(p.note)}</p></div>`:""}`;
+  $("#drawer").hidden=false; $("#dwVeil").hidden=false; $("#dwClose").focus();
+}
+function closeDrawer(){ const was=ui.drawer; ui.drawer=null; $("#drawer").hidden=true; $("#dwVeil").hidden=true; if(was&&D) render(); }
+$("#dwClose").onclick=closeDrawer; $("#dwVeil").onclick=closeDrawer;
+
+/* ---------- applications ---------- */
+function rApps(){
+  const P=D.programs, inApp=P.filter(p=>p.status!=="Researching"&&p.status!=="Dropped");
+  const c=s=>P.filter(p=>s.includes(p.status)).length;
+  $("#appStats").innerHTML=[["In the pipeline",inApp.length],["In progress",c(["Shortlisted","In progress"])],["Submitted",c(["Submitted","Under review"])],["Accepted",c(["Accepted"])],["Waiting on a decision",c(["Submitted","Under review","Waitlisted"])]]
+    .map(([l,v])=>`<div class="stat"><div class="v tnum">${v}</div><div class="l">${l}</div></div>`).join("");
+  $$("#aView button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.av===ui.av));
+  const out=$("#appOut");
+  if(!inApp.length){ out.innerHTML=`<div class="panel"><p class="empty">Nothing in the pipeline yet. Set a program's status to Shortlisted to move it here.</p></div>`; return; }
+  if(ui.av==="board"){
+    out.innerHTML=`<div class="board">${BOARD.map(s=>{ const l=inApp.filter(p=>p.status===s); return `<div class="bcol"><h4>${s}<span class="tnum">${l.length}</span></h4>${l.map(p=>`<div class="bcard" data-id="${esc(p.id)}">
+      <b>${esc(p.name)}</b><small class="muted">${esc(p.school)}</small>${p.deadline?dueChip(p.deadline,false):""}
+      <div class="meter" title="Checklist ${checkPct(p)}%"><i style="width:${checkPct(p)}%"></i></div>
+      <select data-act="pstatus" aria-label="Move ${esc(p.name)}">${STATUSES.map(x=>`<option ${x===p.status?"selected":""}>${x}</option>`).join("")}</select>
+      <button class="link" type="button" data-open="${esc(p.id)}" style="justify-self:start">Open file</button></div>`).join("")}</div>`; }).join("")}</div>`;
+  } else {
+    out.innerHTML=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Program</th><th>Status</th><th>Deadline</th><th>Decision</th><th>Checklist</th><th>Fee</th><th>Funding</th><th></th></tr></thead><tbody>${
+      inApp.sort((a,b)=>(a.deadline||"9").localeCompare(b.deadline||"9")).map(p=>`<tr data-id="${esc(p.id)}"><td><span class="name">${esc(p.name)}</span><div class="sub">${esc(p.school)}</div></td>
+      <td><select data-act="pstatus" aria-label="Status for ${esc(p.name)}">${STATUSES.map(x=>`<option ${x===p.status?"selected":""}>${x}</option>`).join("")}</select></td>
+      <td class="tnum">${p.deadline?esc(fmtY(p.deadline)):"—"}</td><td class="tnum">${p.decision?esc(fmtY(p.decision)):"—"}</td>
+      <td style="min-width:110px"><div class="meter"><i style="width:${checkPct(p)}%"></i></div><div class="sub">${checkPct(p)}%</div></td>
+      <td class="num">${money(p.fee,p.currency)}</td><td class="num">${money(p.expFunding,p.currency)}</td><td><button class="edit" type="button" data-open="${esc(p.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`;
+  }
+}
+
+/* ---------- documents ---------- */
+function rDocs(){
+  const dd=[...D.docs].sort((a,b)=>(a.order||0)-(b.order||0));
+  $("#docs").innerHTML=dd.length?dd.map(d=>{ const exp=d.expiry?daysTo(d.expiry):null;
+    return `<li data-id="${esc(d.id)}"><div class="top"><span class="dn">${esc(d.title)}</span><button class="state ${esc(d.status)}" data-act="cycle" type="button">${DOC_ST[d.status]||"Not started"}</button></div>
+      ${d.note?`<span class="dnote">${esc(d.note)}</span>`:""}
+      <div class="dmeta">${d.due?`<span>Needed ${esc(fmt(d.due))}</span>`:""}${d.expiry?`<span style="${exp!=null&&exp<90?"color:var(--warn)":""}">Expires ${esc(fmtY(d.expiry))}</span>`:""}${d.copies?`<span>${esc(d.copies)} copies</span>`:""}${d.office?`<span>${esc(d.office)}</span>`:""}</div>
+      ${d.contact?`<div class="dmeta"><span>${esc(d.contact)}</span><button class="copy" type="button" data-copy="${esc(d.contact)}">Copy</button></div>`:""}
+      <div class="dlinks">${safeUrl(d.file)?`<a href="${esc(d.file)}" target="_blank" rel="noopener">My copy ↗</a>`:""}${safeUrl(d.link)?`<a href="${esc(d.link)}" target="_blank" rel="noopener">Official page ↗</a>`:""}<button class="edit" type="button" data-edit="docs" style="margin-left:auto">Edit</button></div></li>`; }).join("")
+    :`<li class="empty">No documents yet.</li>`;
+  $("#tests").innerHTML=D.tests.length?D.tests.map(x=>{ const v=x.valid?daysTo(x.valid):null; return `<tr data-id="${esc(x.id)}"><td class="name">${esc(x.test)}${x.note?`<div class="sub">${esc(x.note)}</div>`:""}</td><td>${esc(x.target||"—")}</td>
+    <td class="tnum">${x.date?esc(fmtY(x.date)):"Not booked"}</td><td><b>${esc(x.score||"—")}</b></td><td class="tnum">${esc(x.ref||"—")}${x.ref?` <button class="copy" type="button" data-copy="${esc(x.ref)}">Copy</button>`:""}</td>
+    <td class="tnum" style="${v!=null&&v<120?"color:var(--warn);font-weight:700":""}">${x.valid?esc(fmtY(x.valid)):"—"}</td><td class="num">${x.cost!==""&&x.cost!=null?money(x.cost,"PKR"):"—"}</td><td><button class="edit" type="button" data-edit="tests">Edit</button></td></tr>`; }).join("")
+    :`<tr><td colspan="8" class="empty">No tests yet.</td></tr>`;
+  const rc=s=>D.recs.filter(r=>r.status===s).length;
+  $("#recCount").textContent=D.recs.length?`${rc("Submitted")} submitted · ${rc("Agreed")} agreed · ${rc("Asked")} waiting`:"";
+  $("#recs").innerHTML=D.recs.length?D.recs.map(r=>`<tr data-id="${esc(r.id)}"><td><span class="name">${esc(r.name)}</span><div class="sub">${esc(r.role)}</div></td>
+    <td><span class="chip ${r.status==="Submitted"?"ok":r.status==="Agreed"?"cat":r.status==="Asked"?"soon":r.status==="Declined"?"late":""}">${esc(r.status)}</span></td>
+    <td class="tnum">${r.asked?esc(fmtY(r.asked)):"—"}${r.asked&&r.status==="Asked"&&daysTo(r.asked)<=-14?`<div class="sub" style="color:var(--warn)">Send a reminder</div>`:""}</td>
+    <td>${r.email?`${esc(r.email)} <button class="copy" type="button" data-copy="${esc(r.email)}">Copy</button>`:"—"}${r.phone?`<div class="sub">${esc(r.phone)}</div>`:""}</td>
+    <td class="sub">${esc(r.progs||"—")}</td><td><button class="edit" type="button" data-edit="recs">Edit</button></td></tr>`).join("")
+    :`<tr><td colspan="6" class="empty">No recommenders yet. Most programs ask for 2–3. Add the people you plan to ask.</td></tr>`;
+  $("#contacts").innerHTML=D.contacts.length?D.contacts.map(c=>`<div class="ccard" data-id="${esc(c.id)}"><div class="d">${esc(c.dept)}</div>${c.org?`<div class="o">${esc(c.org)}</div>`:""}
+    ${c.name?`<div class="line"><span>${esc(c.name)}</span></div>`:""}
+    ${c.email?`<div class="line"><span>✉ ${esc(c.email)}</span><button class="copy" type="button" data-copy="${esc(c.email)}">Copy</button></div>`:""}
+    ${c.phone?`<div class="line"><span>☎ ${esc(c.phone)}</span><button class="copy" type="button" data-copy="${esc(c.phone)}">Copy</button></div>`:""}
+    ${safeUrl(c.link)?`<div class="line"><a href="${esc(c.link)}" target="_blank" rel="noopener">Website ↗</a></div>`:""}
+    ${c.note?`<div class="hand muted">${esc(c.note)}</div>`:""}
+    <div class="acts"><button class="edit" type="button" data-edit="contacts">Edit</button></div></div>`).join("")
+    :`<p class="empty">No contacts yet.</p>`;
+  $("#resources").innerHTML=RESOURCES.map(([g,list])=>`<div class="grp"><h4>${esc(g)}</h4>${list.map(([n,u,dsc])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗<small>${esc(dsc)}</small></a>`).join("")}</div>`).join("");
+}
+
+/* ---------- writing ---------- */
+function rWriting(){
+  const W=D.writing, c=s=>W.filter(w=>s.includes(w.status)).length;
+  $("#wrStats").innerHTML=[["Pieces",W.length],["In progress",c(["Outline","Drafting","Review"])],["Final or sent",c(["Final","Sent"])],["Due in 14 days",W.filter(w=>!["Final","Sent"].includes(w.status)&&daysTo(w.due)!=null&&daysTo(w.due)<=14).length]]
+    .map(([l,v])=>`<div class="stat"><div class="v tnum">${v}</div><div class="l">${l}</div></div>`).join("");
+  $("#writing").innerHTML=W.length?[...W].sort((a,b)=>(a.due||"9").localeCompare(b.due||"9")).map(w=>{ const over=num(w.limit)&&num(w.words)>num(w.limit);
+    return `<tr data-id="${esc(w.id)}"><td><span class="name">${esc(w.title)}</span>${w.note?`<div class="sub">${esc(w.note)}</div>`:""}</td><td class="sub">${w.prog?esc(progName(w.prog)):"General"}</td><td>${esc(w.type)}</td>
+    <td><span class="chip ${["Final","Sent"].includes(w.status)?"ok":w.status==="Idea"?"":"soon"}">${esc(w.status)}</span></td>
+    <td class="num" style="${over?"color:var(--warn);font-weight:800":""}">${w.words!==""&&w.words!=null?esc(w.words):"—"}${w.limit?` / ${esc(w.limit)}`:""}</td>
+    <td>${w.due?dueChip(w.due,["Final","Sent"].includes(w.status)):"—"}</td><td>${safeUrl(w.link)?`<a href="${esc(w.link)}" target="_blank" rel="noopener">Open ↗</a>`:"—"}</td><td><button class="edit" type="button" data-edit="writing">Edit</button></td></tr>`; }).join("")
+    :`<tr><td colspan="8" class="empty">Nothing yet. Add your SOP and CV first.</td></tr>`;
+}
+
+/* ---------- funding ---------- */
+function rFunding(){
+  $("#fundRoutes").innerHTML=D.funding.length?D.funding.map(f=>`<article class="pcard" data-id="${esc(f.id)}" style="border-top-color:var(--olive-soft)">
+    <div class="row"><span class="chip cat">${esc(f.type)}</span><span class="chip ${["Awarded","Eligible"].includes(f.status)?"ok":["Not eligible","Closed"].includes(f.status)?"late":"soon"}">${esc(f.status)}</span></div>
+    <h3>${esc(f.name)}</h3>
+    <dl><dt>Can fund</dt><dd>${esc(f.carries||"—")}</dd><dt>Covers</dt><dd>${esc(f.covers||"—")}</dd>${f.amount!==""&&f.amount!=null?`<dt>Amount</dt><dd>${money(f.amount,f.currency)} / yr</dd>`:""}<dt>Deadline</dt><dd>${f.deadline?`${esc(fmtY(f.deadline))} (${rel(daysTo(f.deadline))})`:"Check dates"}</dd></dl>
+    ${f.note?`<div class="hand muted">${esc(f.note)}</div>`:""}
+    <div class="row">${safeUrl(f.link)?`<a href="${esc(f.link)}" target="_blank" rel="noopener">Official page ↗</a>`:""}<button class="edit" type="button" data-edit="funding" style="margin-left:auto">Edit</button></div></article>`).join("")
+    :`<p class="empty">No funding routes yet.</p>`;
+  const act=D.programs.filter(activeProg);
+  $("#fmx").innerHTML=act.length?act.map(p=>`<tr data-id="${esc(p.id)}"><td><span class="name">${esc(p.name)}</span><div class="sub">${esc(p.school)}</div></td>
+    <td><select data-fm="currency" aria-label="Currency for ${esc(p.name)}">${CURR.map(c=>`<option ${c===p.currency?"selected":""}>${c}</option>`).join("")}</select></td>
+    ${["tuition","living","expFunding"].map(k=>`<td><input type="number" min="0" step="100" data-fm="${k}" value="${esc(p[k])}" aria-label="${k} for ${esc(p.name)}"></td>`).join("")}
+    <td class="num" data-gap>${gapCell(p)}</td></tr>`).join("")
+    :`<tr><td colspan="6" class="empty">Add programs to see what each one costs.</td></tr>`;
+  fmxTotals();
+}
+const gapCell = p => (p.tuition===""&&p.living==="")?"—":(()=>{ const g=num(p.tuition)+num(p.living)-num(p.expFunding); return `<span class="${g>0?"gap-pos":"gap-zero"}">${money(Math.max(0,g),p.currency)}</span>`; })();
+function fmxTotals(){
+  const by={}; D.programs.filter(activeProg).forEach(p=>{ if(p.tuition===""&&p.living==="") return; const g=Math.max(0,num(p.tuition)+num(p.living)-num(p.expFunding)); by[p.currency]=(by[p.currency]||{t:0,l:0,f:0,g:0,n:0}); const o=by[p.currency]; o.t+=num(p.tuition);o.l+=num(p.living);o.f+=num(p.expFunding);o.g+=g;o.n++; });
+  $("#fmxTot").innerHTML=Object.entries(by).map(([c,o])=>`<tr><td>Average of ${o.n} (${c})</td><td></td><td class="num">${money(o.t/o.n,c)}</td><td class="num">${money(o.l/o.n,c)}</td><td class="num">${money(o.f/o.n,c)}</td><td class="num">${money(o.g/o.n,c)}</td></tr>`).join("");
+}
+
+/* ---------- scoring ---------- */
+const PRESETS = {"Balanced":{d1:30,d2:25,d3:20,d4:15,d5:10},"Funding first":{d1:20,d2:20,d3:35,d4:15,d5:10},"Career first":{d1:20,d2:40,d3:15,d4:10,d5:15},"Family & location first":{d1:25,d2:20,d3:15,d4:30,d5:10}};
+function rScoring(){
+  $("#presets").innerHTML=`<span class="eyebrow">Presets</span>`+Object.keys(PRESETS).map(k=>`<button class="btn ghost sm" type="button" data-preset="${esc(k)}">${esc(k)}</button>`).join("")+`<button class="link" type="button" id="dimReset">Reset dimensions</button>`;
+  const tot=D.dims.reduce((s,d)=>s+num(d.weight),0)||1;
+  $("#dims").innerHTML=D.dims.map(d=>`<tr data-id="${esc(d.id)}"><td class="name">${esc(d.name)}</td><td><input type="number" min="0" step="1" data-act="dimw" value="${esc(d.weight)}" aria-label="Weight for ${esc(d.name)}"></td>
+    <td class="num" data-share>${Math.round(num(d.weight)/tot*100)}%</td><td class="sub">${esc(d.desc)}</td><td><button class="edit" type="button" data-edit="dims">Edit</button></td></tr>`).join("");
+  rRanking();
+}
+function rRanking(){
+  const l=D.programs.filter(activeProg).map(p=>[p,fit(p)]).sort((a,b)=>(b[1]??-1)-(a[1]??-1));
+  $("#ranking").innerHTML=l.length?`<ul class="radar">${l.map(([p,f],i)=>`<li style="grid-template-columns:36px 1fr auto"><span class="d">${i+1}</span><span class="t"><button class="link" style="text-decoration:none;font-weight:700;text-align:left" type="button" data-open="${esc(p.id)}">${esc(p.name)}</button><small>${esc(p.school)} · ${esc(p.tier)}</small></span><span class="fit tnum">${f??"—"}</span></li>`).join("")}</ul>`
+    :`<p class="empty">Add programs and rate them in each program's file.</p>`;
+}
+
+/* ---------- ambition ---------- */
+function rAmbition(){
+  const A=D.ambition;
+  $("#amGoal").value=A.goal||""; $("#amDate").value=A.date||"";
+  $$("[data-why]").forEach(t=>t.value=A.why?.[t.dataset.why]||"");
+  let h="";
+  for(let b=0;b<9;b++){
+    if(b===4){
+      h+=`<div class="owb center">`;
+      for(let c=0;c<9;c++){ if(c===4){ h+=`<div class="owc goal" data-mirror="goal">${esc(A.goal||"Your goal")}</div>`; continue; }
+        const pi=c<4?c:c-1; h+=`<div class="owc pillar"><textarea data-am="pillar" data-p="${pi}" aria-label="Pillar ${pi+1}" placeholder="Pillar ${pi+1}">${esc(A.pillars[pi].name)}</textarea></div>`; }
+      h+=`</div>`; continue; }
+    const pi=b<4?b:b-1, P=A.pillars[pi];
+    h+=`<div class="owb">`;
+    for(let c=0;c<9;c++){ if(c===4){ h+=`<div class="owc mirror" data-mirror="p${pi}">${esc(P.name||"Pillar "+(pi+1))}</div>`; continue; }
+      const ai=c<4?c:c-1, a=P.actions[ai];
+      h+=`<div class="owc ${a.done?"done":""}"><textarea data-am="act" data-p="${pi}" data-a="${ai}" aria-label="Action ${ai+1} for ${esc(P.name||"pillar "+(pi+1))}" placeholder="Action">${esc(a.t)}</textarea><input type="checkbox" data-am="done" data-p="${pi}" data-a="${ai}" ${a.done?"checked":""} aria-label="Done"></div>`; }
+    h+=`</div>`;
+  }
+  $("#ow").innerHTML=h; owCount();
+  const days=[...Array(7)].map((_,i)=>{ const d=today0(); d.setDate(d.getDate()-6+i); return iso(d); }), td=iso(today0());
+  $("#routines").innerHTML=A.routines.length?A.routines.map(r=>`<div class="r" data-id="${esc(r.id)}"><input type="checkbox" class="check" data-am="rt" ${r.log?.[td]?"checked":""} aria-label="Done today: ${esc(r.t)}"><span>${esc(r.t)}</span>
+    <span class="dots" aria-label="Last 7 days">${days.map(d=>`<i class="${r.log?.[d]?"on":""}" title="${esc(fmt(d))}"></i>`).join("")}</span><button class="del" type="button" data-am="rtdel">Remove</button></div>`).join("")
+    :`<p class="empty">Add 2–4 small habits you'll tick every day.</p>`;
+  $("#diary").innerHTML=A.diary.length?[...A.diary].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20).map(e=>`<div class="e"><div class="d">${esc(fmtY(e.date))}</div><div>${esc(e.did)}</div>${e.next?`<div class="muted">Tomorrow: ${esc(e.next)}</div>`:""}</div>`).join("")
+    :`<p class="empty">One line a day is enough.</p>`;
+}
+function owCount(){ const all=D.ambition.pillars.flatMap(p=>p.actions).filter(a=>a.t); $("#owCount").textContent=`${all.filter(a=>a.done).length} of ${all.length} actions done`; }
+$("#amGoal").addEventListener("input",e=>{ D.ambition.goal=e.target.value; const m=$('[data-mirror="goal"]'); if(m) m.textContent=e.target.value||"Your goal"; });
+$("#amGoal").addEventListener("change",persist);
+$("#amDate").addEventListener("change",e=>{ D.ambition.date=e.target.value; persist(); });
+$$("[data-why]").forEach(t=>t.addEventListener("change",()=>{ D.ambition.why[t.dataset.why]=t.value; persist(); }));
+$("#ow").addEventListener("input",e=>{ const t=e.target; if(t.dataset.am==="pillar"){ D.ambition.pillars[+t.dataset.p].name=t.value; const m=$(`[data-mirror="p${t.dataset.p}"]`); if(m) m.textContent=t.value||"Pillar "+(+t.dataset.p+1); }
+  if(t.dataset.am==="act") D.ambition.pillars[+t.dataset.p].actions[+t.dataset.a].t=t.value; });
+$("#ow").addEventListener("change",e=>{ const t=e.target; if(t.dataset.am==="done"){ D.ambition.pillars[+t.dataset.p].actions[+t.dataset.a].done=t.checked; t.parentElement.classList.toggle("done",t.checked); owCount(); } persist(); if(t.dataset.am==="act") owCount(); });
+$("#rtForm").addEventListener("submit",e=>{ e.preventDefault(); const v=$("#rtText").value.trim(); if(!v) return; D.ambition.routines.push({id:uid(),t:v,log:{}}); e.target.reset(); save(); });
+$("#dyForm").addEventListener("submit",e=>{ e.preventDefault(); const v=$("#dyDid").value.trim(); if(!v) return; D.ambition.diary.push({id:uid(),date:iso(today0()),did:v,next:$("#dyNext").value.trim()}); e.target.reset(); save(); toast("Entry saved"); });
+$("#routines").addEventListener("change",e=>{ if(e.target.dataset.am!=="rt") return; const r=D.ambition.routines.find(x=>x.id===e.target.closest("[data-id]").dataset.id); r.log=r.log||{}; const td=iso(today0()); if(e.target.checked) r.log[td]=true; else delete r.log[td]; save(); });
+
+/* ---------- profile ---------- */
+const PF = [["degree","Degree","e.g. BBA, four years"],["uni","University",""],["grad","Graduation","e.g. June 2026"],["cgpa","CGPA","e.g. 3.40 / 4.00"],["english","English test","e.g. IELTS 7.0 (planned)"],["gretest","GRE / GMAT","e.g. Not taken"],
+  ["langs","Languages",""],["skills","Technical skills","e.g. Excel, SQL, Python, Power BI"],["career","Career goal","",1],["work","Work experience","One role per line: role, company, months",1],["strengths","Strongest material","Projects, research or results that set you apart",1],["gaps","Gaps to fix","What's missing or weak, and the plan for it",1]];
+function rProfile(){
+  const P=D.profile;
+  $("#pform").innerHTML=PF.map(([k,l,ph,big])=>`<label class="${big?"wide":""}">${esc(l)}${big?`<textarea data-pf="${k}" placeholder="${esc(ph)}">${esc(P[k]||"")}</textarea>`:`<input data-pf="${k}" value="${esc(P[k]||"")}" placeholder="${esc(ph)}" maxlength="200">`}</label>`).join("");
+}
+$("#pform").addEventListener("change",e=>{ const k=e.target.dataset.pf; if(!k) return; D.profile[k]=e.target.value; persist(); toast("Saved"); });
+
+/* ================= delegated actions ================= */
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const tab=t.closest("#tabs [data-view]"); if(tab){ show(tab.dataset.view); return; }
+  const go=t.closest("[data-go]"); if(go){ show(go.dataset.go); return; }
+  const gt=t.closest("[data-goto]"); if(gt){ goto(gt.dataset.goto); return; }
+  const op=t.closest("[data-open]"); if(op){ openDrawer(op.dataset.open); return; }
+  const ad=t.closest("[data-add]"); if(ad){ openForm(ad.dataset.add,null); return; }
+  const ed=t.closest("[data-edit]"); if(ed){ openForm(ed.dataset.edit, ed.closest("[data-id]").dataset.id); return; }
+  const ep=t.closest("[data-edit-prog]"); if(ep){ openForm("programs",ep.dataset.editProg); return; }
+  const cp=t.closest("[data-copy]"); if(cp){ copy(cp.dataset.copy); return; }
+  const ct=t.closest("[data-cat]"); if(ct){ ui.cat=ct.dataset.cat; rPlan(); return; }
+  const pv=t.closest("[data-pv]"); if(pv){ ui.pv=pv.dataset.pv; LS.set("cove.pv",ui.pv); rPrograms(); return; }
+  const av=t.closest("[data-av]"); if(av){ ui.av=av.dataset.av; LS.set("cove.av",ui.av); rApps(); return; }
+  const pr=t.closest("[data-preset]"); if(pr){ const w=PRESETS[pr.dataset.preset]; D.dims.forEach(d=>{ if(w[d.id]!=null) d.weight=w[d.id]; }); save(); toast(`${pr.dataset.preset} weights applied`); return; }
+  if(t.id==="dimReset"){ D.dims=defaultDims(); save(); toast("Dimensions reset"); return; }
+  if(t.id==="cmpOpen"){ openCompare(); return; }
+  if(t.id==="cmpReset"){ ui.cmp.clear(); render(); return; }
+  if(t.closest("[data-act='cycle']")){ const d=D.docs.find(x=>x.id===t.closest("[data-id]").dataset.id); if(d){ d.status={todo:"doing",doing:"done",done:"todo"}[d.status]||"doing"; save(); } return; }
+  if(t.dataset.am==="rtdel"){ if(!t.classList.contains("arm")){ t.classList.add("arm"); t.textContent="Sure?"; setTimeout(()=>{t.classList.remove("arm"); t.textContent="Remove";},3000); return; }
+    D.ambition.routines=D.ambition.routines.filter(r=>r.id!==t.closest("[data-id]").dataset.id); save(); }
 });
+document.addEventListener("change",e=>{
+  const t=e.target, row=t.closest("[data-id]"), id=row?.dataset.id;
+  const act=t.dataset.act;
+  if(act==="toggle"){ const x=D.tasks.find(k=>k.id===id); if(x){ x.done=t.checked; save(); if(t.checked) toast("Nice. One less thing."); } }
+  else if(act==="pstatus"){ const p=D.programs.find(k=>k.id===id); if(p){ p.status=t.value; save(); } }
+  else if(act==="gate"){ const g=D.gates.find(k=>k.id===id); if(g){ g.status=t.value; save(); } }
+  else if(act==="cmp"){ t.checked?ui.cmp.add(id):ui.cmp.delete(id); renderCmpBar(); }
+  else if(act==="dcmp"){ t.checked?ui.cmp.add(ui.drawer):ui.cmp.delete(ui.drawer); render(); }
+  else if(act==="dstatus"){ const p=D.programs.find(k=>k.id===ui.drawer); p.status=t.value; save(); openDrawer(p.id); }
+  else if(act==="pcheck"){ const p=D.programs.find(k=>k.id===ui.drawer); p.check[t.dataset.i]=t.checked; persist(); $("#dwPct").textContent=checkPct(p); }
+  else if(act==="rate"){ const p=D.programs.find(k=>k.id===ui.drawer); const v=t.value===""?"":Math.max(0,Math.min(10,+t.value)); if(v===""){ delete p.ratings[t.dataset.dim]; } else { p.ratings[t.dataset.dim]=v; t.value=v; } persist(); $("#dwFit").textContent=fit(p)??"not rated"; }
+  else if(act==="dimw"){ const d=D.dims.find(k=>k.id===id); d.weight=t.value===""?0:Math.max(0,+t.value); persist();
+    const tot=D.dims.reduce((s,x)=>s+num(x.weight),0)||1; $$("#dims tr").forEach(r=>{ const dd=D.dims.find(k=>k.id===r.dataset.id); r.querySelector("[data-share]").textContent=Math.round(num(dd.weight)/tot*100)+"%"; }); rRanking(); }
+  else if(t.dataset.fm){ const p=D.programs.find(k=>k.id===id); p[t.dataset.fm]=t.dataset.fm==="currency"?t.value:(t.value===""?"":Math.max(0,+t.value)); persist(); row.querySelector("[data-gap]").innerHTML=gapCell(p); fmxTotals(); }
+});
+document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return;
+  if(!$("#formVeil").hidden) closeForm(); else if(!$("#cmpVeil").hidden) $("#cmpVeil").hidden=true; else if(!$("#drawer").hidden) closeDrawer(); else { $("#veil").hidden=true; $("#confirmDel").hidden=true; } });
 
-/* ---------- quote popup ---------- */
-let qi = Math.floor(Math.random()*QUOTES.length);
-function setQuote(){ const [q,by] = QUOTES[qi%QUOTES.length]; $("#qText").textContent = `“${q.replaceAll("{name}", firstName())}”`; $("#qBy").textContent = "— "+by; $("#qHi").textContent = `For you, ${firstName()}`; }
-function openQuote(){ setQuote(); $("#veil").hidden = false; $("#qGo").focus(); }
-const closeQuote = () => $("#veil").hidden = true;
-$("#qNext").onclick = () => { qi++; setQuote(); };
-$("#qGo").onclick = closeQuote;
-$("#quoteBtn").onclick = () => { qi++; openQuote(); };
-$("#veil").addEventListener("click", e => { if (e.target.id==="veil") closeQuote(); });
-document.addEventListener("keydown", e => { if (e.key==="Escape"){ closeQuote(); $("#confirmDel").hidden = true; } });
+/* ================= profile menu ================= */
+const menu=$("#profileMenu");
+$("#profileBtn").onclick=()=>{ menu.hidden=!menu.hidden; $("#profileBtn").setAttribute("aria-expanded",!menu.hidden); };
+document.addEventListener("click",e=>{ if(!e.target.closest(".menu-wrap")){ menu.hidden=true; $("#profileBtn").setAttribute("aria-expanded",false); } });
+$("#mSwitch").onclick=()=>{ menu.hidden=true; openPicker(); };
+$("#mIcs").onclick=()=>{ menu.hidden=true; exportIcs(); };
+$("#radarIcs").onclick=exportIcs; $("#planIcs").onclick=exportIcs;
+$("#mCsv").onclick=()=>{ menu.hidden=true; exportCsv(); };
+$("#mExport").onclick=()=>{ menu.hidden=true;
+  download(`masters-cove-${firstName().toLowerCase()}-${iso(new Date())}.json`, JSON.stringify({app:"masters-cove",version:2,profile:me(),data:D},null,2), "application/json"); };
+$("#importFile").onchange=async e=>{ menu.hidden=true; const f=e.target.files[0]; if(!f) return;
+  try{ const j=JSON.parse(await f.text()); if(j.app!=="masters-cove"||!j.data) throw 0; D=migrate(j.data); save(); note(`Restored the plan from ${f.name}.`); }
+  catch{ note("That file isn't a Masters Cove backup. Choose a .json file downloaded from this app."); }
+  e.target.value=""; };
+$("#mDelete").onclick=()=>{ menu.hidden=true; $("#cdName").textContent=me()?.name||"this profile"; $("#confirmDel").hidden=false; $("#cdNo").focus(); };
+$("#cdNo").onclick=()=>$("#confirmDel").hidden=true;
+$("#cdYes").onclick=()=>{ LS.del("cove.data."+active); profiles=profiles.filter(p=>p.id!==active); LS.set("cove.profiles",profiles); active=null; LS.del("cove.active"); D=null; $("#confirmDel").hidden=true; openPicker(); };
 
-/* ---------- boot ---------- */
-show(["home","plan","programs","docs"].includes(ui.view) ? ui.view : "home");
-if (active && profiles.some(p=>p.id===active)){ loadProfile(active); openQuote(); }
-else { render(); openPicker(); }
+function loadProfile(id){ active=id; LS.set("cove.active",id); D=migrate(LS.get("cove.data."+id,null)); persist(); ui.cmp.clear(); show(ui.view); }
+function openPicker(){
+  $("#pkList").innerHTML=profiles.map(p=>`<button type="button" data-pid="${esc(p.id)}">${esc(p.name)}<span aria-hidden="true">→</span></button>`).join("");
+  $("#pkHelp").textContent=profiles.length?"Pick your profile, or make a new one. Each plan is saved only in this browser.":"Make your profile to start. Your plan is saved only in this browser, so nobody else sees it.";
+  $("#picker").hidden=false;
+}
+$("#pkList").addEventListener("click",e=>{ const b=e.target.closest("[data-pid]"); if(!b) return; $("#picker").hidden=true; loadProfile(b.dataset.pid); openQuote(); });
+$("#newProfile").addEventListener("submit",e=>{ e.preventDefault(); const p={id:uid(),name:$("#npName").value.trim()}; if(!p.name) return;
+  profiles.push(p); LS.set("cove.profiles",profiles); LS.set("cove.data."+p.id,$("#npTemplate").value==="starter"?starter():blank());
+  e.target.reset(); $("#picker").hidden=true; loadProfile(p.id); openQuote(); });
+
+/* ================= quote popup ================= */
+let qi=Math.floor(Math.random()*QUOTES.length);
+function setQuote(){ const [q,by]=QUOTES[qi%QUOTES.length]; $("#qText").textContent=`“${q.replaceAll("{name}",firstName())}”`; $("#qBy").textContent="— "+by; $("#qHi").textContent=`For you, ${firstName()}`; }
+function openQuote(){ setQuote(); $("#veil").hidden=false; $("#qGo").focus(); }
+$("#qNext").onclick=()=>{ qi++; setQuote(); };
+$("#qGo").onclick=()=>$("#veil").hidden=true;
+$("#quoteBtn").onclick=()=>{ qi++; openQuote(); };
+$("#veil").addEventListener("click",e=>{ if(e.target.id==="veil") $("#veil").hidden=true; });
+
+/* ================= boot ================= */
+buildTabs();
+if(active && profiles.some(p=>p.id===active)){ loadProfile(active); openQuote(); }
+else openPicker();
 })();
 </script>
 </body>
