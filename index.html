@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Masters Cove</title>
+<meta name="description" content="A cozy planner for masters applications: milestones, programs, documents and a daily nudge.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap">
+<style>
+/* THEME — change these tokens to re-skin the whole app.
+   Light = cream + olive; dark = green study at night with brass lamp light. */
+:root{
+  --bg:#f3efe3; --surface:#fbf8f0; --surface-2:#ece7d6; --ink:#2e3120; --muted:#6c6d58;
+  --olive:#6b6a3a; --olive-ink:#fbf8f0; --olive-soft:#e2dfc6; --brass:#a87f32; --brass-soft:#f1e3c4;
+  --line:#ddd6c1; --warn:#b4543a; --warn-soft:#f5dfd5; --good:#5d7a3c; --shadow:0 1px 0 rgba(60,55,30,.06),0 6px 18px -10px rgba(60,55,30,.25);
+  --f-display:"Fredoka","Nunito Sans",system-ui,sans-serif;
+  --f-body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-quote:"Fraunces",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#13201a; --surface:#1b2b22; --surface-2:#22362b; --ink:#ede5cf; --muted:#a3a892;
+  --olive:#b6b878; --olive-ink:#13201a; --olive-soft:#2c3f2f; --brass:#d9ae5e; --brass-soft:#3a3322;
+  --line:#2d4234; --warn:#e48f72; --warn-soft:#3e2a22; --good:#a6c27a; --shadow:0 8px 24px -14px rgba(0,0,0,.7);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13201a; --surface:#1b2b22; --surface-2:#22362b; --ink:#ede5cf; --muted:#a3a892;
+  --olive:#b6b878; --olive-ink:#13201a; --olive-soft:#2c3f2f; --brass:#d9ae5e; --brass-soft:#3a3322;
+  --line:#2d4234; --warn:#e48f72; --warn-soft:#3e2a22; --good:#a6c27a; --shadow:0 8px 24px -14px rgba(0,0,0,.7);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+[hidden]{display:none!important}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:8px}
+.tnum{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;flex-direction:column;line-height:1;margin-right:auto}
+.brand b{font-family:var(--f-display);font-weight:700;font-size:28px;color:var(--olive);letter-spacing:.01em}
+.brand span{font-size:10.5px;letter-spacing:.32em;color:var(--muted);margin-top:4px;text-transform:uppercase;font-weight:700}
+nav.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:999px;overflow-x:auto;max-width:100%}
+nav.tabs button{border:0;background:none;padding:7px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{background:var(--olive);color:var(--olive-ink)}
+.icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;color:var(--ink)}
+.icon-btn:hover{border-color:var(--olive)}
+.menu-wrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px;min-width:220px;box-shadow:var(--shadow);display:grid;z-index:20}
+.menu button,.menu label{border:0;background:none;text-align:left;padding:9px 12px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+.menu button:hover,.menu label:hover{background:var(--surface-2)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
+.menu .who{padding:8px 12px 4px}
+
+main{padding-block:24px 64px}
+.view{display:grid;gap:20px}
+.status-note{background:var(--brass-soft);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:14px}
+
+.hero{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}
+.greet{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:14px;min-width:0;box-shadow:var(--shadow)}
+.greet h1{font-size:clamp(26px,4vw,36px);color:var(--olive)}
+.greet p{margin:0;color:var(--muted);max-width:60ch}
+.progress{display:flex;align-items:center;gap:14px}
+.bar{flex:1;height:12px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--olive);border-radius:999px;transition:width .5s}
+.count{background:var(--olive);color:var(--olive-ink);border-radius:22px;padding:24px;display:grid;gap:6px;align-content:center;position:relative;overflow:hidden;min-width:0}
+.count::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,140,.35),transparent 70%)}
+.count .eyebrow{color:inherit;opacity:.8}
+.count .big{font-family:var(--f-display);font-size:64px;font-weight:700;line-height:1}
+.count .big small{font-size:20px;font-weight:600;margin-left:6px}
+.count .what{font-weight:700;font-size:17px}
+.count .when{opacity:.85;font-size:14px}
+
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;overflow-x:auto}
+.tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);min-width:640px;margin-top:14px}
+.tl .m{position:relative;padding-top:26px;padding-right:12px}
+.tl .m::before{content:"";position:absolute;top:8px;left:0;right:0;height:3px;background:var(--line)}
+.tl .m.done::before{background:var(--olive)}
+.tl .m .dot{position:absolute;top:1px;left:0;width:17px;height:17px;border-radius:50%;background:var(--surface);border:3px solid var(--line)}
+.tl .m.done .dot{background:var(--olive);border-color:var(--olive)}
+.tl .m.next .dot{border-color:var(--brass);background:var(--brass-soft)}
+.tl .m .d{font-size:12px;font-weight:700;color:var(--muted)}
+.tl .m .t{font-weight:700;font-size:14px;line-height:1.3}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px 22px;display:grid;gap:12px;align-content:start;min-width:0}
+.panel-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.panel-head h2{font-size:21px}
+.panel-head .link{margin-left:auto;background:none;border:0;color:var(--olive);font-weight:700;font-size:13.5px;padding:0}
+.empty{color:var(--muted);font-size:14px;padding:10px 0;list-style:none}
+
+.tasks{list-style:none;margin:0;padding:0;display:grid}
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:11px 0;border-top:1px solid var(--line)}
+.task:first-child{border-top:0}
+.check{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:8px;border:2px solid var(--olive);background:var(--surface);margin:1px 0 0;cursor:pointer;display:grid;place-items:center}
+.check:checked{background:var(--olive)}
+.check:checked::after{content:"";width:6px;height:11px;border:solid var(--olive-ink);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.task .tt{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.task.is-done .tt{text-decoration:line-through;color:var(--muted)}
+.task .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;align-items:center}
+.task .note{font-size:13px;color:var(--muted);margin-top:3px}
+.chip{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.chip.cat{background:var(--olive-soft);color:var(--ink)}
+.chip.soon{background:var(--brass-soft);color:var(--ink)}
+.chip.late{background:var(--warn-soft);color:var(--warn)}
+.chip.ok{background:var(--olive-soft);color:var(--good)}
+.del{border:0;background:none;color:var(--muted);font-size:12.5px;font-weight:700;padding:3px 6px;border-radius:8px;white-space:nowrap}
+.del:hover{color:var(--warn)}
+.del.arm{background:var(--warn-soft);color:var(--warn)}
+.phase{display:grid;gap:4px}
+.phase h3{font-size:17px;display:flex;gap:10px;align-items:baseline}
+.phase h3 .chip{font-family:var(--f-body)}
+
+.prog-sum{display:flex;gap:10px;flex-wrap:wrap}
+.pill-stat{background:var(--surface-2);border-radius:14px;padding:8px 12px;display:flex;gap:8px;align-items:baseline}
+.pill-stat b{font-family:var(--f-display);font-size:22px;color:var(--olive)}
+.pill-stat span{font-size:13px;color:var(--muted);font-weight:700}
+.programs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:grid;gap:8px;align-content:start;min-width:0}
+.pcard .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pcard h3{font-size:18px;line-height:1.2}
+.pcard .school{color:var(--muted);font-weight:600;margin-top:-4px}
+.pcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.pcard dt{color:var(--muted);font-weight:700}
+.pcard dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.pcard a{color:var(--olive);font-weight:700}
+.pcard select{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:3px 10px;font-weight:700;font-size:12.5px}
+.flag{font-size:11.5px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:6px;background:var(--ink);color:var(--bg)}
+.mini-prog{display:grid}
+.mini-prog .mp{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.mini-prog .mp:first-child{border-top:0}
+.mini-prog .mp .n{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.mini-prog .mp .s{font-size:12.5px;color:var(--muted)}
+
+.docs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.docs li:not(.empty){background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto auto;gap:6px 10px;align-items:center}
+.docs .dn{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.docs .dnote{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.state{border:0;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800;white-space:nowrap}
+.state.todo{background:var(--surface-2);color:var(--muted)}
+.state.doing{background:var(--brass-soft);color:var(--ink)}
+.state.done{background:var(--olive);color:var(--olive-ink)}
+.docbar{display:flex;gap:4px;height:10px}
+.docbar i{flex:1;border-radius:4px;background:var(--surface-2)}
+.docbar i.doing{background:var(--brass)}
+.docbar i.done{background:var(--olive)}
+
+details.add{background:var(--surface-2);border-radius:16px;padding:12px 16px}
+details.add summary{cursor:pointer;font-weight:700;color:var(--olive);list-style:none}
+details.add summary::-webkit-details-marker{display:none}
+details.add summary::before{content:"+ "}
+details.add[open] summary::before{content:"– "}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.form label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.form .wide{grid-column:1/-1}
+.form input,.form select,.form textarea{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;font-size:14px;width:100%;min-width:0}
+.form textarea{min-height:60px;resize:vertical}
+.btn{border:0;background:var(--olive);color:var(--olive-ink);font-weight:800;border-radius:999px;padding:9px 18px;justify-self:start}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.veil{position:fixed;inset:0;z-index:50;background:rgba(10,18,13,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:fade .35s ease;overflow-y:auto}
+.card-q{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:26px;max-width:480px;width:100%;padding:30px 28px 24px;display:grid;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+.lamp{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 50% 40%,var(--brass) 0 30%,var(--brass-soft) 31% 100%)}
+.card-q .eyebrow{color:var(--brass)}
+.card-q blockquote{margin:0;font-family:var(--f-quote);font-style:italic;font-size:23px;line-height:1.35;text-wrap:pretty}
+.card-q cite{font-style:normal;color:var(--muted);font-weight:700;font-size:13.5px}
+.card-q .acts{display:flex;gap:10px;flex-wrap:wrap}
+.card-q h2{font-size:28px;color:var(--olive)}
+.card-q p{margin:0;color:var(--muted)}
+.plist{display:grid;gap:8px}
+.plist button{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:12px 14px;font-weight:800;font-size:16px;text-align:left}
+.plist button:hover{border-color:var(--olive)}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{transform:translateY(14px);opacity:.4}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+footer{color:var(--muted);font-size:12.5px;text-align:center;padding-block:0 32px}
+@media (max-width:820px){.hero,.grid2{grid-template-columns:1fr}.count .big{font-size:52px}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>cozy</b><span id="brandName">masters cove</span></div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" data-view="home" aria-selected="true">Dashboard</button>
+      <button role="tab" data-view="plan" aria-selected="false">Planner</button>
+      <button role="tab" data-view="programs" aria-selected="false">Programs</button>
+      <button role="tab" data-view="docs" aria-selected="false">Documents</button>
+    </nav>
+    <button class="icon-btn" id="quoteBtn" type="button">A little push ✦</button>
+    <div class="menu-wrap">
+      <button class="icon-btn" id="profileBtn" type="button" aria-haspopup="true" aria-expanded="false">Profile ▾</button>
+      <div class="menu" id="profileMenu" hidden>
+        <div class="who eyebrow" id="menuWho"></div>
+        <button type="button" id="mSwitch">Switch profile</button>
+        <button type="button" id="mExport">Download backup</button>
+        <label for="importFile">Restore from backup<input type="file" id="importFile" accept="application/json,.json" hidden></label>
+        <hr>
+        <button type="button" id="mDelete">Delete this profile…</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="note" class="status-note" hidden></div>
+
+  <section class="view" data-view="home">
+    <div class="hero">
+      <div class="greet">
+        <div class="eyebrow" id="today">Today</div>
+        <h1 id="hello">Hello</h1>
+        <p>Your masters plan, one cozy step at a time. Everything you tick off is saved on this device.</p>
+        <div class="progress"><div class="bar" aria-hidden="true"><i id="barFill" style="width:0%"></i></div><b class="tnum" id="barTxt">0 / 0 done</b></div>
+      </div>
+      <div class="count">
+        <div class="eyebrow">Next milestone</div>
+        <div class="big tnum" id="countNum">–</div>
+        <div class="what" id="countWhat">No milestones yet</div>
+        <div class="when" id="countWhen"></div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="panel-head"><h2>The road ahead</h2><span class="eyebrow">Milestones</span></div>
+      <div class="tl" id="timeline"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-head"><h2>Coming up</h2><span class="eyebrow">Next 14 days &amp; overdue</span><button class="link" data-go="plan">Full planner →</button></div>
+        <ul class="tasks" id="upcoming"></ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Programs</h2><button class="link" data-go="programs">All programs →</button></div>
+        <div class="prog-sum" id="progSum"></div>
+        <div class="mini-prog" id="miniProg"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Documents &amp; attestation</h2><span class="eyebrow tnum" id="docCount"></span><button class="link" data-go="docs">Open checklist →</button></div>
+      <div class="docbar" id="docBar"></div>
+    </div>
+  </section>
+
+  <section class="view" data-view="plan" hidden>
+    <div class="panel-head"><h2 style="font-size:28px">Planner</h2></div>
+    <div class="filters" id="catFilters"></div>
+    <details class="add">
+      <summary>Add a task</summary>
+      <form class="form" id="taskForm">
+        <label class="wide">Task<input id="tTitle" required maxlength="140" placeholder="e.g. Email admissions about GRE waiver"></label>
+        <label>Due<input id="tDue" type="date" required></label>
+        <label>Category<select id="tCat"></select></label>
+        <label>Milestone?<select id="tMile"><option value="no">No</option><option value="yes">Yes, show on timeline</option></select></label>
+        <label class="wide">Note<input id="tNote" maxlength="240" placeholder="Optional"></label>
+        <button class="btn" type="submit">Add task</button>
+      </form>
+    </details>
+    <div id="phases" class="view"></div>
+  </section>
+
+  <section class="view" data-view="programs" hidden>
+    <div class="panel-head"><h2 style="font-size:28px">Programs</h2></div>
+    <div class="filters" id="countryFilters"></div>
+    <details class="add">
+      <summary>Add a program</summary>
+      <form class="form" id="progForm">
+        <label>Program<input id="pName" required maxlength="120" placeholder="MS Business Analytics"></label>
+        <label>University<input id="pSchool" required maxlength="120"></label>
+        <label>Country<select id="pCountry"><option>USA</option><option>Germany</option><option>Other</option></select></label>
+        <label>Status<select id="pStatus"></select></label>
+        <label>Application deadline<input id="pDeadline" type="date"></label>
+        <label>STEM designated?<select id="pStem"><option value="yes">Yes</option><option value="unknown" selected>Not checked</option><option value="no">No</option></select></label>
+        <label>Tests needed<input id="pTests" maxlength="120" placeholder="IELTS 6.5, GRE optional"></label>
+        <label>Link<input id="pLink" type="url" placeholder="https://"></label>
+        <label class="wide">Notes<textarea id="pNote" maxlength="500"></textarea></label>
+        <button class="btn" type="submit">Add program</button>
+      </form>
+    </details>
+    <div class="programs" id="programs"></div>
+  </section>
+
+  <section class="view" data-view="docs" hidden>
+    <div class="panel-head"><h2 style="font-size:28px">Documents</h2><span class="eyebrow">Tap a status to move it along</span></div>
+    <ul class="docs" id="docs"></ul>
+    <details class="add">
+      <summary>Add a document</summary>
+      <form class="form" id="docForm">
+        <label class="wide">Document<input id="dTitle" required maxlength="120" placeholder="e.g. Character certificate"></label>
+        <label class="wide">Note<input id="dNote" maxlength="200"></label>
+        <button class="btn" type="submit">Add document</button>
+      </form>
+    </details>
+  </section>
+</main>
+<footer class="wrap">Saved privately in this browser · download a backup now and then</footer>
+
+<!-- quote popup -->
+<div class="veil" id="veil" hidden role="dialog" aria-modal="true" aria-labelledby="qText">
+  <div class="card-q">
+    <div class="lamp" aria-hidden="true"></div>
+    <div class="eyebrow" id="qHi">For you</div>
+    <blockquote id="qText"></blockquote>
+    <cite id="qBy"></cite>
+    <div class="acts">
+      <button class="btn" id="qGo" type="button">Let's do this</button>
+      <button class="btn ghost" id="qNext" type="button">Another one</button>
+    </div>
+  </div>
+</div>
+
+<!-- profile picker -->
+<div class="veil" id="picker" hidden role="dialog" aria-modal="true" aria-labelledby="pkTitle">
+  <div class="card-q">
+    <div class="lamp" aria-hidden="true"></div>
+    <h2 id="pkTitle">Whose cove is this?</h2>
+    <p id="pkHelp">Each profile keeps its own plan, saved only in this browser.</p>
+    <div class="plist" id="pkList"></div>
+    <form class="form" id="newProfile" style="margin-top:0">
+      <label class="wide">New profile name<input id="npName" required maxlength="60" placeholder="Your full name"></label>
+      <label class="wide">Start with<select id="npTemplate">
+        <option value="starter">Masters starter plan (USA + Germany, Nov–Dec)</option>
+        <option value="blank">An empty plan</option>
+      </select></label>
+      <button class="btn" type="submit">Create profile</button>
+    </form>
+  </div>
+</div>
+
+<!-- delete confirm -->
+<div class="veil" id="confirmDel" hidden role="dialog" aria-modal="true" aria-labelledby="cdTitle">
+  <div class="card-q">
+    <h2 id="cdTitle">Delete this profile?</h2>
+    <p>This removes <b id="cdName"></b> and its whole plan from this browser. It can't be undone unless you have a backup file.</p>
+    <div class="acts">
+      <button class="btn" id="cdYes" type="button" style="background:var(--warn)">Delete profile</button>
+      <button class="btn ghost" id="cdNo" type="button">Keep it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const CATS = ["Research","Tests","SOP","Documents","Admin"];
+const STATUSES = ["Idea","Researching","Shortlisted","Applying","Submitted","Dropped"];
+const QUOTES = [
+  ["The shortlist doesn't need to be perfect, {name}. It just needs to exist. Start with five.", "From your best friend"],
+  ["Confine yourself to the present.", "Marcus Aurelius, Meditations"],
+  ["While we are postponing, life speeds by.", "Seneca"],
+  ["One email to one university today beats zero emails to ten.", "Cozy Cove rule #1"],
+  ["Future {name}, holding an acceptance letter, is cheering for present {name} right now.", "From your best friend"],
+  ["Your SOP is just your story, told on purpose. Write the messy draft first.", "Cozy Cove rule #2"],
+  ["The journey of a thousand miles begins with a single step.", "Lao Tzu"],
+  ["You finished a whole degree. A few forms and an IELTS slot are nothing.", "From your best friend"],
+  ["Waste no more time arguing what a good person should be. Be one.", "after Marcus Aurelius"],
+  ["Done is better than perfect. Tick one box, then make tea.", "Cozy Cove rule #3"],
+  ["It does not matter how slowly you go, as long as you do not stop.", "attributed to Confucius"],
+  ["Rainy evening, warm lamp, one task. That's the whole plan for tonight.", "From your best friend"],
+];
+
+const starter = () => ({
+  tasks: [
+    ["Collect BBA transcript from university","2026-11-27","Documents",true,"Next week or the week after. Ask for a couple of sealed copies too."],
+    ["List STEM-designated analytics / business programs in the USA (no MBA)","2026-11-22","Research",false,"Look for MS Business Analytics / MS Analytics with research or capstone work."],
+    ["Decide what to study in Germany","2026-11-22","Research",false,"Pick the field first so the German shortlist makes sense."],
+    ["List German programs for that field","2026-11-26","Research",false,"Check if they apply through uni-assist or directly."],
+    ["Note the tests each program needs (IELTS band, GRE/GMAT)","2026-11-28","Tests",false,""],
+    ["Note the documents each program needs","2026-11-28","Documents",false,""],
+    ["Check degree attestation steps (HEC + MOFA)","2026-11-29","Documents",false,"Find out the order, fees and how long each step takes."],
+    ["Shortlist universities","2026-11-30","Research",true,"Before December. Aim for 5–8 across USA and Germany."],
+    ["Pick an IELTS date and test centre","2026-12-08","Tests",false,""],
+    ["Book IELTS","2026-12-15","Tests",true,"By mid-December."],
+    ["Outline the SOP: why analytics, why now, career goal","2026-12-04","SOP",false,""],
+    ["Write first SOP draft","2026-12-13","SOP",true,"December week 2. Messy is fine."],
+    ["Ask 2–3 people for recommendation letters","2026-12-20","Admin",false,""],
+    ["Update CV","2026-12-20","Admin",false,""],
+  ].map(([title,due,cat,milestone,note],i)=>({id:"t"+(i+1),title,due,cat,milestone,note,done:false,created:i+1})),
+  programs: [
+    ["MS Business Analytics","University of Texas at Austin (McCombs)","USA","Researching"],
+    ["MS Business Analytics & Information Management","Purdue University (Daniels)","USA","Researching"],
+    ["MS Business Analytics","University of Minnesota (Carlson)","USA","Researching"],
+    ["Germany program (field to decide)","To be decided","Germany","Idea"],
+  ].map(([name,school,country,status],i)=>({id:"p"+(i+1),name,school,country,status,deadline:"",stem:"unknown",tests:"",link:"",
+    note: country==="USA" ? "Suggested to research. Confirm STEM status, deadline and tests on the program page." : "Decide the field first, then replace this card with real programs.", created:i+1})),
+  docs: [
+    ["BBA transcript","Collect next week or the week after."],["BBA degree",""],["HEC degree attestation","Check if it's needed before MOFA."],
+    ["MOFA attestation",""],["Passport","Check it's valid well past the start date."],["IELTS score report",""],["Statement of purpose",""],
+    ["Recommendation letters",""],["CV / resume",""],["Proof of funds","Bank statement for a US I-20; blocked account for Germany."],
+  ].map(([title,note],i)=>({id:"d"+(i+1),title,note,status:"todo",order:i+1})),
+});
+const blank = () => ({tasks:[], programs:[], docs:[]});
+
+/* ---------- storage (this browser only) ---------- */
+const LS = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); }catch{ return d; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } },
+  del(k){ try{ localStorage.removeItem(k); }catch{} }
+};
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+let profiles = LS.get("cove.profiles", []);
+let active = LS.get("cove.active", null);
+let data = blank();
+const ui = { view: LS.get("cove.view","home"), cat:"All", country:"All" };
+
+function loadProfile(id){
+  active = id; LS.set("cove.active", id);
+  data = Object.assign(blank(), LS.get("cove.data."+id, blank()));
+  render();
+}
+function save(){
+  if (!active) return;
+  if (!LS.set("cove.data."+active, data)) note("Couldn't save in this browser. Private browsing mode can block saving; try a normal window.");
+  render();
+}
+const me = () => profiles.find(p=>p.id===active);
+const firstName = () => (me()?.name || "friend").split(/\s+/)[0];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const parse = s => { if(!s) return null; const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+const daysTo = s => { const d = parse(s); return d ? Math.round((d - today0())/86400000) : null; };
+const fmt = s => { const d = parse(s); return d ? d.toLocaleDateString(undefined,{day:"numeric",month:"short"}) : "No date"; };
+const rel = n => n==null ? "" : n<0 ? `${-n} day${n===-1?"":"s"} late` : n===0 ? "today" : n===1 ? "tomorrow" : `in ${n} days`;
+function note(msg){ const n=$("#note"); n.hidden=!msg; n.textContent=msg||""; }
+const dueChip = t => {
+  if (t.done) return `<span class="chip ok">Done</span>`;
+  const n = daysTo(t.due); if (n==null) return "";
+  return `<span class="chip ${n<0?"late":n<=7?"soon":""} tnum">${esc(fmt(t.due))} · ${rel(n)}</span>`;
+};
+const sortTasks = a => [...a].sort((x,y)=>(x.done-y.done) || (x.due||"9").localeCompare(y.due||"9") || ((x.created||0)-(y.created||0)));
+const flag = c => c==="Germany"?"DE":c==="USA"?"US":"··";
+
+/* ---------- views ---------- */
+function show(v){
+  ui.view = v; LS.set("cove.view", v);
+  document.querySelectorAll("section.view[data-view]").forEach(s=>s.hidden = s.dataset.view!==v);
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===v));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.view));
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+
+function taskRow(t){
+  return `<li class="task ${t.done?"is-done":""}" data-id="${esc(t.id)}">
+    <input type="checkbox" class="check" aria-label="Mark done: ${esc(t.title)}" ${t.done?"checked":""} data-act="toggle">
+    <div style="min-width:0"><div class="tt">${esc(t.title)}</div>${t.note?`<div class="note">${esc(t.note)}</div>`:""}
+      <div class="meta">${dueChip(t)}<span class="chip cat">${esc(t.cat||"Admin")}</span>${t.milestone?`<span class="chip">Milestone</span>`:""}</div></div>
+    <button class="del" data-act="del-task" type="button">Delete</button></li>`;
+}
+
+function render(){
+  const T=data.tasks, P=data.programs, D=data.docs, name=me()?.name||"";
+  $("#brandName").textContent = name ? `${firstName()}'s cove` : "masters cove";
+  $("#menuWho").textContent = name ? `Signed in as ${name}` : "";
+  document.title = name ? `${firstName()}'s Masters Cove` : "Masters Cove";
+  const now = new Date(), h = now.getHours();
+  $("#today").textContent = now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  $("#hello").textContent = `${h<12?"Good morning":h<17?"Good afternoon":"Good evening"}${name?", "+name:""}`;
+
+  const done = T.filter(t=>t.done).length;
+  $("#barFill").style.width = (T.length?Math.round(done/T.length*100):0)+"%";
+  $("#barTxt").textContent = `${done} / ${T.length} done`;
+
+  const ms = sortTasks(T.filter(t=>t.milestone)), next = ms.find(t=>!t.done);
+  if (next){
+    const n = daysTo(next.due);
+    $("#countNum").innerHTML = n==null ? "–" : n<0 ? `${-n}<small>days late</small>` : n===0 ? "Today" : `${n}<small>day${n===1?"":"s"}</small>`;
+    $("#countWhat").textContent = next.title; $("#countWhen").textContent = next.due ? "Due "+fmt(next.due) : "";
+  } else if (ms.length){ $("#countNum").textContent="✓"; $("#countWhat").textContent="Every milestone is done. So proud of you!"; $("#countWhen").textContent=""; }
+  else { $("#countNum").textContent="–"; $("#countWhat").textContent="No milestones yet"; $("#countWhen").textContent="Add a task and mark it as a milestone."; }
+
+  $("#timeline").innerHTML = ms.length ? [...ms].sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(m=>
+    `<div class="m ${m.done?"done":""} ${next&&m.id===next.id?"next":""}"><span class="dot"></span><div class="d tnum">${esc(fmt(m.due))}</div><div class="t">${esc(m.title)}</div></div>`).join("")
+    : `<div class="empty">Milestones will show here.</div>`;
+
+  const up = sortTasks(T.filter(t=>!t.done && daysTo(t.due)!=null && daysTo(t.due)<=14)).slice(0,7);
+  $("#upcoming").innerHTML = up.length ? up.map(taskRow).join("") : `<li class="empty">${T.length?"Nothing due in the next two weeks. Breathe.":"No tasks yet. Add your first one in the planner."}</li>`;
+
+  const act = P.filter(p=>p.status!=="Dropped");
+  $("#progSum").innerHTML = [["USA",act.filter(p=>p.country==="USA").length],["Germany",act.filter(p=>p.country==="Germany").length],["Shortlisted",act.filter(p=>["Shortlisted","Applying","Submitted"].includes(p.status)).length]]
+    .map(([l,n])=>`<div class="pill-stat"><b class="tnum">${n}</b><span>${l}</span></div>`).join("");
+  const mini = [...act].sort((a,b)=>(a.deadline||"9").localeCompare(b.deadline||"9")).slice(0,5);
+  $("#miniProg").innerHTML = mini.length ? mini.map(p=>{ const n=daysTo(p.deadline);
+    return `<div class="mp"><span class="flag">${flag(p.country)}</span><div style="min-width:0"><div class="n">${esc(p.name)}</div><div class="s">${esc(p.school||"")} · ${esc(p.status)}</div></div>
+      <span class="chip ${n!=null&&n<=30?"soon":""} tnum">${p.deadline?esc(fmt(p.deadline)):"Deadline?"}</span></div>`; }).join("")
+    : `<div class="empty">No programs yet. Add the first one on the Programs tab.</div>`;
+
+  const dd = [...D].sort((a,b)=>(a.order||0)-(b.order||0));
+  $("#docBar").innerHTML = dd.map(d=>`<i class="${esc(d.status)}" title="${esc(d.title)}"></i>`).join("");
+  $("#docCount").textContent = D.length ? `${D.filter(d=>d.status==="done").length} of ${D.length} ready · ${D.filter(d=>d.status==="doing").length} in progress` : "";
+
+  renderPlanner(); renderPrograms(); renderDocs();
+}
+
+function renderPlanner(){
+  $("#catFilters").innerHTML = ["All",...CATS].map(c=>`<button type="button" aria-pressed="${ui.cat===c}" data-cat="${c}">${c}</button>`).join("");
+  const list = sortTasks(data.tasks.filter(t=>ui.cat==="All"||t.cat===ui.cat));
+  const monthEnd = (()=>{ const d=today0(); return new Date(d.getFullYear(), d.getMonth()+1, 1); })();
+  const groups = [
+    ["Overdue", t=>!t.done && daysTo(t.due)<0],
+    ["This week", t=>!t.done && daysTo(t.due)>=0 && daysTo(t.due)<=7],
+    ["Later this month", t=>!t.done && daysTo(t.due)>7 && parse(t.due)<monthEnd],
+    ["Coming months", t=>!t.done && (t.due==null||t.due==="" || (daysTo(t.due)>7 && parse(t.due)>=monthEnd))],
+    ["Done", t=>t.done],
+  ];
+  const html = groups.map(([n,fn])=>{ const it=list.filter(fn); return it.length ? `<div class="panel phase"><h3>${n}<span class="chip tnum">${it.length}</span></h3><ul class="tasks">${it.map(taskRow).join("")}</ul></div>` : ""; }).join("");
+  $("#phases").innerHTML = html || `<div class="panel"><div class="empty">No tasks here yet. Use “Add a task” above.</div></div>`;
+}
+
+function renderPrograms(){
+  $("#countryFilters").innerHTML = ["All","USA","Germany","Other"].map(c=>`<button type="button" aria-pressed="${ui.country===c}" data-country="${c}">${c}</button>`).join("");
+  const list = data.programs.filter(p=>ui.country==="All"||p.country===ui.country)
+    .sort((a,b)=>(a.status==="Dropped")-(b.status==="Dropped") || (a.deadline||"9").localeCompare(b.deadline||"9"));
+  $("#programs").innerHTML = list.length ? list.map(p=>{
+    const stem = p.stem==="yes"?`<span class="chip ok">STEM</span>`:p.stem==="no"?`<span class="chip late">Not STEM</span>`:(p.country==="USA"?`<span class="chip soon">STEM: check</span>`:"");
+    const link = /^https?:\/\//.test(p.link||"") ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">Program page ↗</a>` : "";
+    return `<article class="pcard" data-id="${esc(p.id)}">
+      <div class="row"><span class="flag">${flag(p.country)}</span>${stem}
+        <select aria-label="Status for ${esc(p.name)}" data-act="status" style="margin-left:auto">${STATUSES.map(s=>`<option ${s===p.status?"selected":""}>${s}</option>`).join("")}</select></div>
+      <h3>${esc(p.name)}</h3><div class="school">${esc(p.school||"")}</div>
+      <dl><dt>Deadline</dt><dd class="tnum">${p.deadline?`${esc(fmt(p.deadline))} (${rel(daysTo(p.deadline))})`:"Not found yet"}</dd>
+        <dt>Tests</dt><dd>${esc(p.tests||"To check")}</dd>${p.note?`<dt>Notes</dt><dd>${esc(p.note)}</dd>`:""}</dl>
+      <div class="row">${link}<button class="del" data-act="del-prog" type="button" style="margin-left:auto">Delete</button></div></article>`;
+  }).join("") : `<div class="panel"><div class="empty">No programs here yet. Use “Add a program” above.</div></div>`;
+}
+
+function renderDocs(){
+  const lab = {todo:"Not started",doing:"In progress",done:"Ready"};
+  const dd = [...data.docs].sort((a,b)=>(a.order||0)-(b.order||0));
+  $("#docs").innerHTML = dd.length ? dd.map(d=>`<li data-id="${esc(d.id)}"><span class="dn">${esc(d.title)}</span>
+      <button class="state ${esc(d.status)}" data-act="cycle" type="button">${lab[d.status]||"Not started"}</button>
+      <button class="del" data-act="del-doc" type="button" aria-label="Delete ${esc(d.title)}">✕</button>
+      ${d.note?`<span class="dnote">${esc(d.note)}</span>`:""}</li>`).join("") : `<li class="empty">No documents yet. Add one below.</li>`;
+}
+
+/* ---------- interactions ---------- */
+const idOf = el => el.closest("[data-id]").dataset.id;
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-cat]"); if (c){ ui.cat=c.dataset.cat; renderPlanner(); return; }
+  const k = e.target.closest("[data-country]"); if (k){ ui.country=k.dataset.country; renderPrograms(); return; }
+  const btn = e.target.closest("[data-act]"); if (!btn || btn.tagName==="INPUT" || btn.tagName==="SELECT") return;
+  const a = btn.dataset.act;
+  if (a.startsWith("del-")){
+    if (!btn.classList.contains("arm")){ const t=btn.textContent; btn.classList.add("arm"); btn.textContent="Sure?"; setTimeout(()=>{btn.classList.remove("arm"); btn.textContent=t;},3000); return; }
+    const col = {"del-task":"tasks","del-prog":"programs","del-doc":"docs"}[a], id = idOf(btn);
+    data[col] = data[col].filter(x=>x.id!==id); save();
+  }
+  if (a==="cycle"){ const d = data.docs.find(x=>x.id===idOf(btn)); if(d){ d.status = {todo:"doing",doing:"done",done:"todo"}[d.status]||"doing"; save(); } }
+});
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset.act==="toggle"){ const t=data.tasks.find(x=>x.id===idOf(el)); if(t){ t.done=el.checked; save(); } }
+  if (el.dataset.act==="status"){ const p=data.programs.find(x=>x.id===idOf(el)); if(p){ p.status=el.value; save(); } }
+});
+
+$("#tCat").innerHTML = CATS.map(c=>`<option>${c}</option>`).join("");
+$("#pStatus").innerHTML = STATUSES.map(c=>`<option ${c==="Researching"?"selected":""}>${c}</option>`).join("");
+$("#taskForm").addEventListener("submit", e => { e.preventDefault();
+  data.tasks.push({id:uid(), title:$("#tTitle").value.trim(), due:$("#tDue").value, cat:$("#tCat").value, milestone:$("#tMile").value==="yes", note:$("#tNote").value.trim(), done:false, created:Date.now()});
+  e.target.reset(); save(); });
+$("#progForm").addEventListener("submit", e => { e.preventDefault();
+  data.programs.push({id:uid(), name:$("#pName").value.trim(), school:$("#pSchool").value.trim(), country:$("#pCountry").value, status:$("#pStatus").value,
+    deadline:$("#pDeadline").value, stem:$("#pStem").value, tests:$("#pTests").value.trim(), link:$("#pLink").value.trim(), note:$("#pNote").value.trim(), created:Date.now()});
+  e.target.reset(); save(); });
+$("#docForm").addEventListener("submit", e => { e.preventDefault();
+  data.docs.push({id:uid(), title:$("#dTitle").value.trim(), note:$("#dNote").value.trim(), status:"todo", order:Date.now()});
+  e.target.reset(); save(); });
+
+/* ---------- profile menu ---------- */
+const menu = $("#profileMenu");
+$("#profileBtn").onclick = () => { menu.hidden = !menu.hidden; $("#profileBtn").setAttribute("aria-expanded", !menu.hidden); };
+document.addEventListener("click", e => { if (!e.target.closest(".menu-wrap")) { menu.hidden = true; $("#profileBtn").setAttribute("aria-expanded", false); } });
+$("#mSwitch").onclick = () => { menu.hidden = true; openPicker(); };
+$("#mExport").onclick = () => {
+  menu.hidden = true;
+  const blob = new Blob([JSON.stringify({app:"masters-cove", version:1, profile:me(), data}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = `masters-cove-${firstName().toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+};
+$("#importFile").onchange = async e => {
+  menu.hidden = true; const f = e.target.files[0]; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (j.app!=="masters-cove" || !j.data) throw 0;
+    data = Object.assign(blank(), {tasks:j.data.tasks||[], programs:j.data.programs||[], docs:j.data.docs||[]});
+    save(); note(`Restored the plan from ${f.name}.`);
+  } catch { note("That file isn't a Masters Cove backup. Choose a .json file downloaded from this app."); }
+  e.target.value = "";
+};
+$("#mDelete").onclick = () => { menu.hidden = true; $("#cdName").textContent = me()?.name || "this profile"; $("#confirmDel").hidden = false; $("#cdNo").focus(); };
+$("#cdNo").onclick = () => $("#confirmDel").hidden = true;
+$("#cdYes").onclick = () => {
+  LS.del("cove.data."+active); profiles = profiles.filter(p=>p.id!==active); LS.set("cove.profiles", profiles);
+  active = null; LS.del("cove.active"); data = blank(); $("#confirmDel").hidden = true; render(); openPicker();
+};
+
+function openPicker(){
+  $("#pkList").innerHTML = profiles.map(p=>`<button type="button" data-pid="${esc(p.id)}">${esc(p.name)}<span aria-hidden="true">→</span></button>`).join("");
+  $("#pkHelp").textContent = profiles.length ? "Pick your profile, or make a new one. Each plan is saved only in this browser." : "Make your profile to start. Your plan is saved only in this browser, so nobody else sees it.";
+  $("#picker").hidden = false;
+}
+$("#pkList").addEventListener("click", e => { const b = e.target.closest("[data-pid]"); if (!b) return; $("#picker").hidden = true; loadProfile(b.dataset.pid); openQuote(); });
+$("#newProfile").addEventListener("submit", e => {
+  e.preventDefault();
+  const p = {id:uid(), name:$("#npName").value.trim()}; if (!p.name) return;
+  profiles.push(p); LS.set("cove.profiles", profiles);
+  LS.set("cove.data."+p.id, $("#npTemplate").value==="starter" ? starter() : blank());
+  e.target.reset(); $("#picker").hidden = true; loadProfile(p.id); openQuote();
+});
+
+/* ---------- quote popup ---------- */
+let qi = Math.floor(Math.random()*QUOTES.length);
+function setQuote(){ const [q,by] = QUOTES[qi%QUOTES.length]; $("#qText").textContent = `“${q.replaceAll("{name}", firstName())}”`; $("#qBy").textContent = "— "+by; $("#qHi").textContent = `For you, ${firstName()}`; }
+function openQuote(){ setQuote(); $("#veil").hidden = false; $("#qGo").focus(); }
+const closeQuote = () => $("#veil").hidden = true;
+$("#qNext").onclick = () => { qi++; setQuote(); };
+$("#qGo").onclick = closeQuote;
+$("#quoteBtn").onclick = () => { qi++; openQuote(); };
+$("#veil").addEventListener("click", e => { if (e.target.id==="veil") closeQuote(); });
+document.addEventListener("keydown", e => { if (e.key==="Escape"){ closeQuote(); $("#confirmDel").hidden = true; } });
+
+/* ---------- boot ---------- */
+show(["home","plan","programs","docs"].includes(ui.view) ? ui.view : "home");
+if (active && profiles.some(p=>p.id===active)){ loadProfile(active); openQuote(); }
+else { render(); openPicker(); }
+})();
+</script>
+</body>
+</html>
